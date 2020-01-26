@@ -1,0 +1,63 @@
+Collection(CID, date, SID)
+Tuples here represent entire collections from a field trip, where CID is the collection ID, date is the
+starting date of the field trip, and SID is the staff ID of the collector.
+
+
+Collected(CID, AN)
+A tuple here represents the fact that collection CID includes artifact number AN. A single collection usually contains multiple artifacts, and a single artifact may be aggregated from more than one
+collection.
+
+Artifact(AN, species, type, location, SID)
+Tuples here represent single artifact collected in the field. AN is the artifact number, species is the
+scientific species name, type is one of tissue, image, model, or live, location is where it was collected,
+and SID is the staff number of the technician who maintains this artifact.
+
+Published(AN, journal, date)
+A tuple here represents the fact that artifact AN was mentioned in scholarly publication journal with
+publication date date.
+
+Staff(SID, name, email, rank, date)
+These tuples represent a member of the institute's scientific staff. SID is the staff ID, name is their
+full name, email is their professional email, rank is one of: technician, student, pre-tenure, or tenured,
+and date is the date when they attained that rank.
+
+COL(family)
+A singleton tuple here means that family is a scientific zoological family name that appears in the
+Catalogue of Life.
+
+Genus(genus, family)
+A tuple here means that genus is in family family.
+
+Species(species, genus)
+A tuple here means that species is in genus genus.
+
+
+----------------------------
+Constraints (middle --> attr of inside the parenthesis)
+
+project-species(Artifact) - project-species(Species) = 0 --> project-species(Artifact) <= project-species(Species)
+- Every species in Artifact must be at least one species.
+
+project-staff(Rank) <=  {'technician', 'student', 'pre-tenure', 'tenure'}
+- Every staff in Rank must be either a technician, student, pre-tenue, or tenure.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
