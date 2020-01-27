@@ -1,35 +1,61 @@
 Collection(CID, date, SID)
-Tuples here represent entire collections from a field trip, where CID is the collection ID, date is the
-starting date of the field trip, and SID is the staff ID of the collector.
+Tuples here represent entire collections from a field trip, where 
 
-
+'CID' is the collection ID
+'date' is the starting date of the field trip, 
+'SID' is the staff ID of the collector.
+--------
 Collected(CID, AN)
-A tuple here represents the fact that collection CID includes artifact number AN. A single collection usually contains multiple artifacts, and a single artifact may be aggregated from more than one
-collection.
+A tuple here represents the fact that collection 
 
+'CID' includes artifact number 'AN'. 
+
+A single collection usually contains multiple artifacts, and a single artifact may be aggregated from more than one collection.
+--------
 Artifact(AN, species, type, location, SID)
-Tuples here represent single artifact collected in the field. AN is the artifact number, species is the
-scientific species name, type is one of tissue, image, model, or live, location is where it was collected,
-and SID is the staff number of the technician who maintains this artifact.
+Tuples here represent single artifact collected in the field. 
+
+'AN' is the artifact number, 'species' is the
+scientific species name, 
+'type' is one of tissue, image, model, or live, 
+'location' is where it was collected,
+'SID' is the staff number of the technician who maintains this artifact.
+--------
 
 Published(AN, journal, date)
-A tuple here represents the fact that artifact AN was mentioned in scholarly publication journal with
-publication date date.
+A tuple here represents the fact that artifact 
+
+'AN' was mentioned in scholarly 
+publication 'journal' with
+publication date 'date'.
+--------
 
 Staff(SID, name, email, rank, date)
-These tuples represent a member of the institute's scientific staff. SID is the staff ID, name is their
-full name, email is their professional email, rank is one of: technician, student, pre-tenure, or tenured,
-and date is the date when they attained that rank.
+These tuples represent a member of the institute's scientific staff.
+
+'SID' is the staff ID, 
+'name' is theirfull name, 
+'email' is their professional email, 
+'rank' is one of: technician, student, pre-tenure, or tenured,
+'date' is the date when they attained that rank.
+--------
 
 COL(family)
-A singleton tuple here means that family is a scientific zoological family name that appears in the
-Catalogue of Life.
+A singleton tuple here means that 
+
+'family; is a scientific zoological family name that appears in the Catalogue of Life.
+--------
 
 Genus(genus, family)
-A tuple here means that genus is in family family.
+A tuple here means that 
+
+'genus' is in family 'family'.
+--------
 
 Species(species, genus)
-A tuple here means that species is in genus genus.
+A tuple here means that 
+
+'species' is in genus 'genus'.
 
 
 ----------------------------
@@ -39,7 +65,193 @@ project-species(Artifact) - project-species(Species) = 0 --> project-species(Art
 - Every species in Artifact must be at least one species.
 
 project-staff(Rank) <=  {'technician', 'student', 'pre-tenure', 'tenure'}
-- Every staff in Rank must be either a technician, student, pre-tenue, or tenure.
+- Every staff in Rank must be at least one of a technician, student, pre-tenue, or tenure.
+
+project-family(Genus) - project-family(COL) = 0
+- Every family in Genus must be at least one of a family that appears in the Catalogue of Life.
+
+project-genus(Species) <= project-genus(Genus)
+- Every genus in Species must be at least one of a genus in Genus.
+
+project-CID(Collected) = project-CID(Collection)
+- Every Collection ID of collected must be a collection ID from a collection
+
+project-AN(Artifact) = project-AN(Collected)
+- Every Artifact Number in Artifact must be an Artifact number in Collected
+
+project-SID(Collection) <= project-SID(Staff)
+- Every staff ID of the collector in Collection must be at least one of a staff ID in Staff.
+
+project-SID(Artifact) <= project-SID(Staff)
+- Every SID of the collector in Artifact must be at least  one of a staff ID in Staff
+
+project-type(Artifact) <= {'tissue', 'image', 'model', 'live'}
+- Every type of Artifact must be at least one of tissue, image, model, live
+
+project-AN(Published) <= project-AN(Artifact)
+- Every Artifact Number in Published must be at least one of the Artifact Number of Artifact.
+
+-------------------------
+
+
+Usable Operators: 
+
+project, select, rename, natural join, naturaljoin, naturaljoin(condition), cartesianproduct, intersection, union, equals, _
+
+today --> for current date
+
+assignment 
+
+logical operators
+
+
+0 --> empty set 
+
+
+1.Rationale: Performance reviews include seeing how current the work is of staff who have held their
+current rank for a long time.  #todo
+
+Query: Find the most recent collection date of any artifact collected by a staff member who has held
+their current rank the longest. Keep ties.
+
+-recent collection date 
+- current rank longest
+
+
+
+          collection natural join staff
+
+project(date)Staff - project(d1)((select 'd1' < 'd2') ((rename 'date' as 'd1')(Staff) x (rename 'date' as 'd2')(Staff))) := LongestDate
+
+--> Longest date of the staff
+
+project-sid(select(Staff.date = LongestDate)Staff) := SidOfLongest
+
+--> gets the sid of the staff with the longest rank duration
+
+select(Collection.SID=SidOfLongest) Collection := CollectionLongest
+
+--> gets the row with the SID of the Longest rank duration 
+
+project(date)CollectionLongest
+
+
+
+
+
+ANS: 
+
+2. Rationale: Staff who maintain every artifact in some collection should be considered favourably in
+performance reviews.
+
+Query: Find all staff who maintain all artifacts in at least one collection.
+
+
+3. Rationale: An artifact collected and maintained by the same staff may have some special requirements
+that should be investigated. #todo
+
+Query: Find all artifacts that were collected by the same staff who maintains them.
+
+    project(AN) [select(Artifact.SID = Staff.SID) -Artifact naturaljoin Staff-]
+
+     --> gets rows of artifacts that have the same SIDS with staff)
+     --> project the artifact numbers from that row
+
+
+4. Rationale: Identify multi-talented field workers.
+
+Query: Find all staff who have collected at least 3 artifacts from every species in some family.
+
+
+5. Rationale: Which publications might have some specialized niche focus?
+
+Query: Find all publications that have used exactly 2 of our artifacts. #todo
+
+
+
+
+6. Rationale: Identify motherlode locations.
+
+Query: Find all locations where at least one artifact from every family has been collected.
+
+7. Rationale: Exclusively tissue sample collectors may need extra support for special reagents and shipping costs.
+
+Query: Find all staff who have collected only tissue samples. #todo
+
+
+8. Rationale: Collection staff who should be encouraged to diversify their network.
+
+Query: Find all staff pairs who have worked only with each other on collections.
+
+
+9. Rationale: Track the inuence of a given staff member.
+
+Query: Staff member SID1 is inuenced by staff member SID2 if (a) they have ever worked together on
+a collection or (b) if SID1 has ever worked with a staff member who is inuenced by SID2. Find SIDs
+of staff members inuenced by SID 42. #todo
+
+
+
+-----
+
+1. No species is also a genus.
+   - project(genus)species  - project(genus)genus = 0 
+   - select()
+
+2. No genus belongs to more than one family.
+   - project(genus)species - project(genus)family = 0
+
+3. All publications must be published after all artifacts they use have been collected.
+   - project-AN(Published) - (project-AN(Artifact) - project-AN(Collected)) = 0
+   Published(AN, journal, date)
+
+4. Students may not catalogue live artifacts  
+   ---------> For a tuple in Artifact, if its type is "live", then the staff who maintains the artifact cannot be a student.
+   -select(type = 'live')Artifact natural-join(Rank = 'student') Staff = 0
+
+
+project-type(Artifact) <= {'tissue', 'image', 'model', 'live'}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
