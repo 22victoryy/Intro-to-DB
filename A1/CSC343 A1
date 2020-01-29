@@ -1,6 +1,3 @@
-
-
-
 Collection(CID, date, SID)
 Tuples here represent entire collections from a field trip, where 
 
@@ -61,41 +58,6 @@ A tuple here means that
 'species' is in genus 'genus'.
 
 
-----------------------------
-Constraints (middle --> attr of inside the parenthesis)
-
-project-species(Artifact) - project-species(Species) = 0 
-- No Artifact species should be in species of Species
-
-project-staff(Rank) <=  {'technician', 'student', 'pre-tenure', 'tenure'}
-- Every staff in Rank must be at least one of a technician, student, pre-tenue, or tenure.
-
-project-family(Genus) - project-family(COL) = 0
-- No Family in Genus should be in family in COL.
-
-Every family in Genus must be at least one of a family that appears in the Catalogue of Life.
-
-project-genus(Species) <= project-genus(Genus)
-- Every genus in Species must be at least one of a genus in Genus.
-
-project-CID(Collected) = project-CID(Collection)
-- Every Collection ID of collected must be a collection ID from a collection
-
-project-AN(Artifact) = project-AN(Collected)
-- Every Artifact Number in Artifact must be an Artifact number in Collected
-
-project-SID(Collection) <= project-SID(Staff)
-- Every staff ID of the collector in Collection must be at least one of a staff ID in Staff.
-
-project-SID(Artifact) <= project-SID(Staff)
-- Every SID of the collector in Artifact must be at least  one of a staff ID in Staff
-
-project-type(Artifact) <= {'tissue', 'image', 'model', 'live'}
-- Every type of Artifact must be at least one of tissue, image, model, live
-
-project-AN(Published) <= project-AN(Artifact)
-- Every Artifact Number in Published must be at least one of the Artifact Number of Artifact.
-
 -------------------------
 
 
@@ -123,28 +85,29 @@ their current rank the longest. Keep ties.
 - current rank longest
 
 
+Today
+project(date)Staff - 
 
-project(date)Staff - project(d1)((select 'd1' < 'd2') ((rename 'date' as 'd1')(Staff) x (rename 'date' as 'd2')(Staff))) := LongestDate
+
+project(d1)((select 'd1' < 'd2') ((rename 'date' as 'd1')(Staff) x (rename 'date' as 'd2')(Staff))) := LongestDate
 
 --> Longest date of the staff
+
+
 
 project-sid(select(Staff.date = LongestDate)Staff) := SidOfLongest
 
 --> gets the sid of the staff with the longest rank duration
 
-select(Collection.SID=SidOfLongest) Collection := CollectionLongest
+
+
+select(Collection.SID=SidOfLongest.SID) Collection := CollectionLongest
 
 --> gets the row with the SID of the Longest rank duration 
 
-project(CollectionLongest.date)CollectionLongest
 
+project(date)CollectionLongest
 
-
-
-2. Rationale: Staff who maintain every artifact in some collection should be considered favourably in
-performance reviews.
-
-Query: Find all staff who maintain all artifacts in at least one collection.
 
 
 3. Rationale: An artifact collected and maintained by the same staff may have some special requirements
@@ -152,7 +115,8 @@ that should be investigated. #todo
 
 Query: Find all artifacts that were collected by the same staff who maintains them.
 
-    project(Artifact.AN) [select(Artifact.SID = Staff.SID) -Artifact naturaljoin Staff-]
+    project(Artifact.AN) [select(Artifact.SID = Collection.SID) Artifact natural join Collection
+
 
      --> gets rows of artifacts that have the same SIDS with staff)
      --> project the artifact numbers from that row
@@ -169,17 +133,17 @@ Query: Find all publications that have used exactly 2 of our artifacts. #todo
 
 Published(AN, journal, date)
 
-project(p1.journal) [select(p1.AN = p2.AN, p1.journal = p2.journal, p1.date =! p2.date)[rename 'Published' as p1 * rename "Published as p2"]]
+
+project(p1.journal) [select(p1.AN != p2.AN, p1.journal = p2.journal)[rename 'Published' as p1 * rename "Published as p2"]]
 != AtLeastTwice
 
-project(p1.journal) [select(p1.AN = p2.AN = p3.AN, p1.journal = p2.journal = p3.jpurnal, p1.date = p2.date = p3.date)[rename 'Published' as p1 * rename "Published as p2" * rename "Published as p3"]] != AtLeastThrice
+project(p1.journal) [select(p1.AN != p2.AN != p3.AN, p1.journal = p2.journal = p3.jpurnal)[rename 'Published' as p1 * rename "Published as p2" * rename "Published as p3"]] != AtLeastThrice
 
 AtleastTwice - AtleastThrice 
 
 
 
 6. Rationale: Identify motherlode locations.
-
 Query: Find all locations where at least one artifact from every family has been collected.
 
 
@@ -190,7 +154,11 @@ Query: Find all staff who have collected only tissue samples. #todo
 
 Artifact(AN, species, type, location, SID)
 
-select(type='tissue')Artifact  != TissueArtifacts --> rows with only tissue artifacts
+select(type='tissue')Artifact natural join Collected naturaljoin Collection := TissuePpl --> rows with only tissue artifacts
+select(type!='tissue') Artifact natural join Collected naturaljoin Collection := OtherArtifacts
+TissuePpl - OtherArtifacts
+
+
 project(SID)TissueArtifacts --> the SID of the collectors of such artifacts 
 
 
@@ -206,31 +174,9 @@ Query: Staff member SID1 is inuenced by staff member SID2 if (a) they have ever 
 a collection or (b) if SID1 has ever worked with a staff member who is inuenced by SID2. Find SIDs
 of staff members inuenced by SID 42. #todo
 
-- I have no idea
 
------
 
-1. No species is also a genus.
-   - project(genus)species  - project(genus)genus = 0 #todo
 
-2. No genus belongs to more than one family.
-   - project(genus)species  project(genus)family = 0
-
-   project(genus)species <= project(genus) family = 0 #not sure..
- 
-   AtleastTwice - AtleastThrice 
-
-3. All publications must be published after all artifacts they use have been collected.
-   
-   - project-AN(Published naturaljoin (Artifact) naturaljoin Collected)) = 0 #todo
-   
-   Published(AN, journal, date)
-
-4. Students may not catalogue live artifacts  
-   ---------> For a tuple in Artifact, if its type is "live", then the staff who maintains the artifact cannot be a student.
-   
-
-   -select(type = 'live')Artifact natural-join(Rank = 'student') Staff = 0 # not sure
 
 
 
