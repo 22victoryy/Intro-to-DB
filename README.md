@@ -2,4 +2,4 @@
 CSC343
 
 # Credits
-Thanks to Danny Heap, for instruction of CSC343 Winter 2020 at University of Toronto
+Danny Heap / Mark Kazakevich, for instruction of CSC343 Winter 2020 at University of Toronto
