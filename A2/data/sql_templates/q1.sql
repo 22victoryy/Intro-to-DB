@@ -21,3 +21,7 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 
 -- Your query that answers the question goes below the "insert into" line:
 INSERT INTO q1
+
+select id as pass_id, firstname || surname as name, count(airlines)
+  from Passenger
+ where condition

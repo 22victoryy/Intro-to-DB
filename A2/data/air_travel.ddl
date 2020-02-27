@@ -77,7 +77,7 @@ CREATE TABLE Arrival (
   datetime timestamp NOT NULL
 );
 
--- Passenger flight bookings.
+-- Passenger flight fs.
 CREATE TYPE seat_class AS ENUM ('economy', 'business', 'first');
 CREATE TABLE Booking (
   id INT PRIMARY KEY,
