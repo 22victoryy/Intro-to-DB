@@ -80,7 +80,30 @@ public class Assignment2 {
     */
    public boolean bookSeat(int passID, int flightID, String seatClass) {
       // Implement this method!
-      return false;
+      // check passenger exists
+      try {
+        PreparedStatement ps;
+        ResultSet rs;
+        String passengerExistsQuery = "select count(*) as count from passenger where id=" + passId;
+        ps = connection.prepareStatement(passengerExistsQuery);
+        rs = ps.executeQuery();
+        rs.first();
+        if (rs.getInt("count") == 0){
+            return false;
+        }
+        // check flight exists
+        String flightExistsQuery = "select count(*) as count from flight where flight_id=" + flightID;
+        ps = connection.prepareStatement(flightExistsQuery);
+        rs = ps.executeQuery();
+        rs.first();
+        if (rs.getInt("count") == 0){
+            return false;
+        }
+      } catch (SQLException se){
+        System.err.println("SQL Exception." + se.getMessage());
+        return false;
+      }
+      return true;
    }
 
    /**
