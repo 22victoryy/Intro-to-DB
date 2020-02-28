@@ -35,22 +35,12 @@ public class Assignment2 {
       // Implement this method!
       try
       {
-	//Properties props = new Properties();
-	//props.setProperty("user",username);
-	//props.setProperty("password",password);
-	//props.setProperty("currentSchema","air_travel, public");
         connection = DriverManager.getConnection(URL, username, password);
-	PreparedStatement ps;
-        ResultSet rs;
-        String wow = "SET search_path TO air_travel, public";
-        ps = connection.prepareStatement(wow);
-        ps.execute();
-	
       }
       catch (SQLException e)
       {
         System.err.println("SQL Exception." + e.getMessage());
-        return true ;
+        return false;
       }
       return true;
    }
@@ -94,42 +84,21 @@ public class Assignment2 {
       try {
         PreparedStatement ps;
         ResultSet rs;
-        String passengerExistsQuery = "SELECT count(*) AS count FROM Passenger WHERE id=" + passID;
-        ps = connection.prepareStatement(passengerExistsQuery,ResultSet.TYPE_SCROLL_SENSITIVE, 
-                        ResultSet.CONCUR_UPDATABLE);
+        String passengerExistsQuery = "select count(*) as count from passenger where id=" + passId;
+        ps = connection.prepareStatement(passengerExistsQuery);
         rs = ps.executeQuery();
         rs.first();
         if (rs.getInt("count") == 0){
             return false;
         }
         // check flight exists
-        String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE flight_num=" + flightID;
-        ps = connection.prepareStatement(flightExistsQuery,ResultSet.TYPE_SCROLL_SENSITIVE, 
-                        ResultSet.CONCUR_UPDATABLE);
+        String flightExistsQuery = "select count(*) as count from flight where flight_id=" + flightID;
+        ps = connection.prepareStatement(flightExistsQuery);
         rs = ps.executeQuery();
         rs.first();
         if (rs.getInt("count") == 0){
             return false;
         }
-	// check empty or waitlist seats
-	int countBooked, capacity;
-        String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-	                           + flightID + " and seat_class=?::seat_class";
-        ps = connection.prepareStatement(bookedCountQuery);
-	ps.setString(1, seatClass);
-        rs = ps.executeQuery();
-        rs.first();
-        countBooked = rs.getInt("count");
-	String airplaneClassCapacityQuery = "SELECT capacity_"+seatClass+" AS capacity " +
-	                      "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
-	                      "WHERE flight.id="+ flightID;
-	ps = connection.prepareStatement(airplaneClassCapacityQuery);
-        rs = ps.executeQuery();
-        rs.first();
-	capacity = rs.getInt("capacity");
-	if ((seatClass == "economy" && capacity - countBooked > -10) || capacity - countBooked <= 0){
-	    return false;
-	}
       } catch (SQLException se){
         System.err.println("SQL Exception." + se.getMessage());
         return false;
@@ -220,19 +189,9 @@ public class Assignment2 {
       try
       {
         Assignment2 a2 = new Assignment2();
-        String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[0];
-        if (a2.connectDB(url, args[0],"")){
-	    if (!a2.bookSeat(7,1,"economy")){
-		System.out.println("Passed passenger does not exist");
-	    } else {
-		System.out.println("Failed passenger does not exist");
-	    }
-	    if (!a2.bookSeat(1,11,"economy")){
-		System.out.println("Passed flight does not exist");
-	    } else {
-		System.out.println("Failed flight does not exist");
-	    }
-	    
+        String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[1];
+        if (a2.connectDB(url, args[1],"")){
+          a2.disconnectDB();
        }
       }
       catch(SQLException e)
