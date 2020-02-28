@@ -128,6 +128,9 @@ public class Assignment2 {
    public static void main(String[] args) {
       // You can put testing code in here. It will not affect our autotester.
       System.out.println("Running the code!");
+      String url = "jdbc:postragesql://localhost:5432/csc343h-"+args[1];
+      connectDB(url, args[1],"");
+      disconnectDB();
    }
 
 }
