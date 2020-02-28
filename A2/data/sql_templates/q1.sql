@@ -22,7 +22,7 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 -- Your query that answers the question goes below the "insert into" line:
 
 CREATE VIEW finished_flights AS
-select pass_id, airline as airline_name
+select pass_id, airline as airlines
   from Flight, Arrivals, Booking
   where Flight.id = Arrivals.flight_id and Booking.flight_id = Arrivals.flight_id;
   -- group by pass_id
