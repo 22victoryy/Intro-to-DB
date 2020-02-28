@@ -153,70 +153,76 @@ public class Assignment2 {
     */
    public int upgrade(int flightID) {
       // Implement this method!
-      try
-      {
+      try {
         PreparedStatement ps;
         ResultSet rs;
 
-        // String allflights = "select * from flight where flightID =" + flightID;
+        String allflights = "select * from flight where flightID =" + flightID;
         // java.sql.Timestamp time = getCurrentTimeStamp();
 
-        // ps = connection.prepareStatement(allflights);
+        ps = connection.prepareStatement(allflights);
 
-        // rs = ps.executeQuery();
-
-        // // check if the row is full --> if the row is full, upgrade it
-        // //
-        // if (rs.getInt("count") == 0){
-        //     return -1;
-        // }
-
-        // if flight exists, 
-        // if customer flight booked,
-
-        // if seats are full return -1 else alter the query and update it 
-
-
-
-        // check if seats are full
-        String allseats = "select * from plane where flightID =" + flightID;
-
-        ps = connection.prepareStatement(allseats);
         rs = ps.executeQuery();
-        int countBooked, capacity;
-        String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-	                           + flightID + " and seat_class=?::seat_class";
-        ps = connection.prepareStatement(bookedCountQuery);
-
-        String economy = "economy";
-	      ps.setString(1, economy);
-        rs = ps.executeQuery();
-        rs.first();
-        countBooked = rs.getInt("count");
-
-
-	      String airplaneClassCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
-	                      "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
-                        "WHERE flight.id="+ flightID;
-
-	      ps = connection.prepareStatement(airplaneClassCapacityQuery);
-        rs = ps.executeQuery();
-        rs.first();
-	      capacity = rs.getInt("capacity");
-        if (capacity - countBooked == capacity){
-            return -1;
+        // check if the flight is empty
+        if (rs.getInt("count") == 0) {
+          System.out.println("The flight does not exist.");
+          return -1;
         }
         else {
-          // Alter query and update
+          // if flight departed
+          // seat is booked
+          String allseats = "select * from plane where flightID =" + flightID;
+          rs = ps.executeQuery();
+          // if flight departed, then print "no seats available", return -1
+          // else, execute below condition
+
+
+
+          // check seat capacity
+          ps = connection.prepareStatement(allseats);
+          rs = ps.executeQuery();
+          int countBooked, capacity;
+          String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
+                              + flightID + " and seat_class=?::seat_class";
+          ps = connection.prepareStatement(bookedCountQuery);
+
+          String economy = "economy";
+          ps.setString(1, economy);
+          rs = ps.executeQuery();
+          rs.first();
+          countBooked = rs.getInt("count");
+
+          String airplaneClassCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
+                          "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
+                          "WHERE flight.id="+ flightID;
+
+          ps = connection.prepareStatement(airplaneClassCapacityQuery);
+          rs = ps.executeQuery();
+          rs.first();
+          capacity = rs.getInt("capacity");
+          if (capacity - countBooked == capacity) {
+              return -1;
+          }
+          else {
+            // Alter query and update
+            String alterUpdate = "ALTER TABLE ";
+            ps = connection.prepareStatement(alterUpdate);
+            int update = ps.executeUpdate();
+            if (update == 0) {
+              System.out.println("The number of seats being updated are:" + update);
+              return update;
+            }
+            else {
+              System.out.println("The number of seats being updated are:" + update);
+              return update;
+            }
+          }
         }
-      }
-      catch (SQLException e)
-      {
-        System.err.println("SQL Exception." + e.getMessage());
-        return -1;
-      }
-      // if empty seat, return 1 
+    }
+    catch (SQLException e) {
+      System.err.println("SQL Exception." + e.getMessage());
       return -1;
+    }
    }
 
 
@@ -228,7 +234,7 @@ public class Assignment2 {
 
     /**
     * Returns a SQL Timestamp object of the current time.
-    * 
+    *
     * @return           Timestamp of current time.
     */
    private java.sql.Timestamp getCurrentTimeStamp() {
@@ -237,6 +243,8 @@ public class Assignment2 {
    }
 
    // Add more helper functions below if desired.
+
+   
 
 
   
