@@ -25,7 +25,7 @@ CREATE VIEW finished_flights AS
 
 select pass_id, airline as airlines
 from Flight, Arrival, Booking
-where Flight.id = Arrival.flight_id and Booking.flight_id = Arrival.flight_id;
+where Flight.id = Depature.flight_id and Booking.flight_id = Departure.flight_id;
   -- group by pass_id
 
 INSERT INTO q1
