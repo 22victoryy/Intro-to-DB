@@ -29,9 +29,9 @@ where Flight.id = Arrival.flight_id and Booking.flight_id = Arrival.flight_id;
   -- group by pass_id
 
 INSERT INTO q1
-SELECT pass_id, firstname || surname as name, count(distinct airlines)
+SELECT id, firstname || surname as name, count(distinct airlines)
 FROM Passenger LEFT JOIN finished_flights ON pass_id=id
-group by pass_id, name;
+group by id, name;
 
 
 
