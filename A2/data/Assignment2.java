@@ -80,6 +80,7 @@ public class Assignment2 {
     */
    public boolean bookSeat(int passID, int flightID, String seatClass) {
       // Implement this method!
+
       return false;
    }
 
@@ -99,6 +100,21 @@ public class Assignment2 {
     */
    public int upgrade(int flightID) {
       // Implement this method!
+      try 
+      {
+        PreparedStatement ps;
+        ResultSet rs;
+        String allseats = "select * from flight where flightID =" + flightID;
+  
+        ps = connection.prepareStatement(allseats);
+  
+        rs = ps.executeQuery();
+      }
+      catch (SQLException e)
+      {
+        System.err.println("SQL Exception." + e.getMessage());
+      }
+      // if empty seat, return 1 
       return -1;
    }
 
