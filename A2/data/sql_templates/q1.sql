@@ -26,7 +26,6 @@ select pass_id, airline as airline_name
   from Flight, Arrivals, Booking
   where Flight.id = Arrivals.flight_id and Booking.flight_id = Arrivals.flight_id;
   -- group by pass_id
-  
 
 INSERT INTO q1 SELECT * from finished_flights;
 
