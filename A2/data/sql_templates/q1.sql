@@ -28,7 +28,9 @@ select pass_id, airline as airline_name
   -- group by pass_id
   
 
-INSERT INTO q1 SELECT * from finished_flights;
+INSERT INTO q1 
+SELECT pass_id, firstname || surname as name, count(distinct airlines)
+FROM Passenger LEFT JOIN finished_flights ON pass_id=id;
 
 
 
