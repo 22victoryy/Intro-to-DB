@@ -41,16 +41,15 @@ public class Assignment2 {
 	//props.setProperty("currentSchema","air_travel, public");
         connection = DriverManager.getConnection(URL, username, password);
 	PreparedStatement ps;
-        ResultSet rs;
+        // ResultSet rs;
         String wow = "SET search_path TO air_travel, public";
         ps = connection.prepareStatement(wow);
         ps.execute();
-	
       }
       catch (SQLException e)
       {
         System.err.println("SQL Exception." + e.getMessage());
-        return true ;
+        return false;
       }
       return true;
    }
@@ -62,14 +61,14 @@ public class Assignment2 {
    */
    public boolean disconnectDB() {
       // Implement this method!
-      try
-      {
+      if (connection != null) {
+        try {
         connection.close();
-      }
-      catch (SQLException e)
-      {
-        System.err.println("SQL Exception." + e.getMessage());
-        return false;
+        }
+        catch (SQLException e) {
+          System.err.println("SQL Exception." + e.getMessage());
+          return false;
+        }
       }
       return true;
    }
@@ -208,13 +207,6 @@ public class Assignment2 {
         else {
           // Alter query and update
         }
-
-
-
-
-
-
-
       }
       catch (SQLException e)
       {
