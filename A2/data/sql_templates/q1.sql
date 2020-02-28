@@ -22,13 +22,13 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 -- Your query that answers the question goes below the "insert into" line:
 
 CREATE VIEW finished_flights AS
-select pass_id, airline as airlines
-  from Flight, Arrivals, Booking
-  where Flight.id = Arrivals.flight_id and Booking.flight_id = Arrivals.flight_id;
-  -- group by pass_id
-  
 
-INSERT INTO q1 
+select pass_id, airline as airlines
+from Flight, Arrival, Booking
+where Flight.id = Arrival.flight_id and Booking.flight_id = Arrival.flight_id;
+  -- group by pass_id
+
+INSERT INTO q1
 SELECT pass_id, firstname || surname as name, count(distinct airlines)
 FROM Passenger LEFT JOIN finished_flights ON pass_id=id;
 
