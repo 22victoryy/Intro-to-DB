@@ -95,20 +95,20 @@ public class Assignment2 {
         PreparedStatement ps;
         ResultSet rs;
         String passengerExistsQuery = "SELECT count(*) AS count FROM Passenger WHERE id=" + passID;
-        ps = connection.prepareStatement(passengerExistsQuery,ResultSet.TYPE_SCROLL_SENSITIVE, 
-                        ResultSet.CONCUR_UPDATABLE);
+        ps = connection.prepareStatement(passengerExistsQuery);
         rs = ps.executeQuery();
-        rs.first();
+        rs.next();
         if (rs.getInt("count") == 0){
+	    System.err.println("Passenger does not exist");
             return false;
         }
         // check flight exists
         String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE flight_num=" + flightID;
-        ps = connection.prepareStatement(flightExistsQuery,ResultSet.TYPE_SCROLL_SENSITIVE, 
-                        ResultSet.CONCUR_UPDATABLE);
+        ps = connection.prepareStatement(flightExistsQuery);
         rs = ps.executeQuery();
-        rs.first();
+        rs.next();
         if (rs.getInt("count") == 0){
+	    System.err.println("Flight does not exist");
             return false;
         }
 	// check empty or waitlist seats
@@ -118,16 +118,17 @@ public class Assignment2 {
         ps = connection.prepareStatement(bookedCountQuery);
 	ps.setString(1, seatClass);
         rs = ps.executeQuery();
-        rs.first();
+        rs.next();
         countBooked = rs.getInt("count");
 	String airplaneClassCapacityQuery = "SELECT capacity_"+seatClass+" AS capacity " +
 	                      "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
 	                      "WHERE flight.id="+ flightID;
 	ps = connection.prepareStatement(airplaneClassCapacityQuery);
         rs = ps.executeQuery();
-        rs.first();
+        rs.next();
 	capacity = rs.getInt("capacity");
-	if ((seatClass == "economy" && capacity - countBooked > -10) || capacity - countBooked <= 0){
+	if ((seatClass == "economy" && capacity - countBooked < -10) || capacity - countBooked <= 0){
+	    System.err.println("Not enough space");
 	    return false;
 	}
       } catch (SQLException se){
@@ -157,11 +158,11 @@ public class Assignment2 {
       {
         PreparedStatement ps;
         ResultSet rs;
-        String allflights = "select * from flight where flightID =" + flightID;
+        String allFlights = "select * from flight where flightID =" + flightID;
         java.sql.Timestamp time = getCurrentTimeStamp();
                 
   
-        ps = connection.prepareStatement(allseats);
+        ps = connection.prepareStatement(allFlights);
   
         rs = ps.executeQuery();
         
@@ -171,14 +172,14 @@ public class Assignment2 {
         // 
         
         if (rs.getInt("count") == 0){
-            return false;
+            return -1;
         }
         
         // check if the row is full
-        String allseats = "select * from plane where flightID =" + flightID;
+        String allSeats = "select * from plane where flightID =" + flightID;
         
         ps = connection.prepareStatement(allSeats);
-        rs.ps.executeQuery();
+        rs = ps.executeQuery();
         
       
       }
@@ -222,16 +223,8 @@ public class Assignment2 {
         Assignment2 a2 = new Assignment2();
         String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[0];
         if (a2.connectDB(url, args[0],"")){
-	    if (!a2.bookSeat(7,1,"economy")){
-		System.out.println("Passed passenger does not exist");
-	    } else {
-		System.out.println("Failed passenger does not exist");
-	    }
-	    if (!a2.bookSeat(1,11,"economy")){
-		System.out.println("Passed flight does not exist");
-	    } else {
-		System.out.println("Failed flight does not exist");
-	    }
+	    a2.bookSeat(7,1,"economy");
+	    a2.bookSeat(1,11,"economy");
 	    
        }
       }
