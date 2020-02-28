@@ -24,8 +24,8 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 CREATE VIEW finished_flights AS
 
 select pass_id, airline as airlines
-from Flight, Arrival, Booking
-where Flight.id = Depature.flight_id and Booking.flight_id = Departure.flight_id;
+from Flight, Departure, Booking
+where Flight.id = Departure.flight_id and Booking.flight_id = Departure.flight_id;
   -- group by pass_id
 
 INSERT INTO q1
