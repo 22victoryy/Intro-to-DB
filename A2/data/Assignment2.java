@@ -112,7 +112,7 @@ public class Assignment2 {
             return false;
         }
 	// check empty or waitlist seats
-	int countBooked, capacity;
+	  int countBooked, capacity;
         String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
 	                           + flightID + " and seat_class=?::seat_class";
         ps = connection.prepareStatement(bookedCountQuery);
@@ -153,38 +153,73 @@ public class Assignment2 {
     */
    public int upgrade(int flightID) {
       // Implement this method!
-      try 
+      try
       {
         PreparedStatement ps;
         ResultSet rs;
-        String allflights = "select * from flight where flightID =" + flightID;
-        java.sql.Timestamp time = getCurrentTimeStamp();
-                
-  
-        ps = connection.prepareStatement(allseats);
-  
-        rs = ps.executeQuery();
-        
-        // first check if the flight exists
-        // check waitlist/empty seats
-        // check if the row is full --> if the row is full, upgrade it 
-        // 
-        
-        if (rs.getInt("count") == 0){
-            return false;
-        }
-        
-        // check if the row is full
+        // String allflights = "select * from flight where flightID =" + flightID;
+        // java.sql.Timestamp time = getCurrentTimeStamp();
+
+        // ps = connection.prepareStatement(allflights);
+
+        // rs = ps.executeQuery();
+
+        // // check if the row is full --> if the row is full, upgrade it
+        // //
+        // if (rs.getInt("count") == 0){
+        //     return -1;
+        // }
+
+        // if flight exists, 
+        // if customer flight booked,
+
+        // if seats are full return -1 else alter the query and update it 
+
+
+
+        // check if seats are full
         String allseats = "select * from plane where flightID =" + flightID;
-        
-        ps = connection.prepareStatement(allSeats);
-        rs.ps.executeQuery();
-        
-      
+
+        ps = connection.prepareStatement(allseats);
+        rs = ps.executeQuery();
+        int countBooked, capacity;
+        String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
+	                           + flightID + " and seat_class=?::seat_class";
+        ps = connection.prepareStatement(bookedCountQuery);
+
+        String economy = "economy";
+	      ps.setString(1, economy);
+        rs = ps.executeQuery();
+        rs.first();
+        countBooked = rs.getInt("count");
+
+
+	      String airplaneClassCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
+	                      "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
+                        "WHERE flight.id="+ flightID;
+
+	      ps = connection.prepareStatement(airplaneClassCapacityQuery);
+        rs = ps.executeQuery();
+        rs.first();
+	      capacity = rs.getInt("capacity");
+        if (capacity - countBooked == capacity){
+            return -1;
+        }
+        else {
+          // Alter query and update
+        }
+
+
+
+
+
+
+
       }
       catch (SQLException e)
       {
         System.err.println("SQL Exception." + e.getMessage());
+        return -1;
       }
       // if empty seat, return 1 
       return -1;
