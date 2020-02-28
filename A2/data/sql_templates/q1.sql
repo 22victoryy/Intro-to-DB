@@ -23,11 +23,11 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 
 CREATE VIEW finished_flights AS
 select pass_id, airline as airline_name
-  from Flight, Arrivals, Booking
-  where Flight.id = Arrivals.flight_id and Booking.flight_id = Arrivals.flight_id;
+  from Flight, Arrival, Booking
+  where Flight.id = Arrival.flight_id and Booking.flight_id = Arrival.flight_id;
   -- group by pass_id
 
-INSERT INTO q1 
+INSERT INTO q1
 SELECT pass_id, firstname || surname as name, count(distinct airlines)
 FROM Passenger LEFT JOIN finished_flights ON pass_id=id;
 
