@@ -33,6 +33,7 @@ SELECT id, firstname || ' ' ||surname as name, count(distinct airlines)
 FROM Passenger LEFT JOIN finished_flights ON pass_id=id
 group by id, name;
 
+--  DONE
 
 
 
