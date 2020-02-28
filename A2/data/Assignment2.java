@@ -33,7 +33,16 @@ public class Assignment2 {
    */
    public boolean connectDB(String URL, String username, String password) {
       // Implement this method!
-      return false;
+      try
+      {
+        connection = DriverManager.getConnection(URL, username, password);
+      }
+      catch (SQLException e)
+      {
+        System.err.println("SQL Exception." + e.getMessage());
+        return false;
+      }
+      return true;
    }
 
   /**
@@ -43,9 +52,17 @@ public class Assignment2 {
    */
    public boolean disconnectDB() {
       // Implement this method!
-      return false;
+      try
+      {
+        connection.close();
+      }
+      catch (SQLException e)
+      {
+        System.err.println("SQL Exception." + e.getMessage());
+        return false;
+      }
+      return true;
    }
-   
    /* ======================= Airline-related methods ======================= */
 
    /**

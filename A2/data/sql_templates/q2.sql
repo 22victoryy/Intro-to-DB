@@ -23,3 +23,11 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 
 -- Your query that answers the question goes below the "insert into" line:
 INSERT INTO q2
+
+select field
+  into variable
+  from table
+ where condition
+
+--  First find late flights
+-- 
