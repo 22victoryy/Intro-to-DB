@@ -298,7 +298,6 @@ public class Assignment2 {
       System.err.println("SQL Exception." + e.getMessage());
       return -1;
     }
-    return -1;
    }
    // fuck this
 
