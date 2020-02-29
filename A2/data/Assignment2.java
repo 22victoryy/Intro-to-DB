@@ -131,14 +131,13 @@ public class Assignment2 {
         rs = ps.executeQuery();
         rs.next();
 	      capacity = rs.getInt("capacity_"+seatClass);
-	      if ((seatClass == "economy" && capacity - countBooked < -10) || capacity - countBooked <= 0){
+	      if ((seatClass.equals("economy") && (capacity - countBooked) <= -10) || (!seatClass.equals("economy") && (capacity - countBooked) <= 0)){
 	        System.err.println("Not enough space");
 	        return false;
         }
 
 	      bCap = rs.getInt("capacity_business");
         fCap = rs.getInt("capacity_first");
-        System.out.println(maxID);
         fin.setInt(1, maxID + 1);
         fin.setInt(2, passID);
         fin.setInt(3, flightID);
@@ -146,13 +145,13 @@ public class Assignment2 {
 
         int[] rc = getSeatLocation(countBooked + 1);
         fin.setString(7,seatLetters.get(rc[1]));
-        if (seatClass == "first"){
+        if (seatClass.equals("first")){
           fin.setInt(6, rc[0]);
-        } else if (seatClass == "business"){
-          fin.setInt(6, rc[0] + fCap/seatLetters.size());
+        } else if (seatClass.equals("business")){
+          fin.setInt(6, rc[0] + (fCap-1)/seatLetters.size() + 1);
         } else {
           if (capacity - countBooked > 0){
-            fin.setInt(6, rc[0] + fCap/seatLetters.size()+bCap/seatLetters.size());
+            fin.setInt(6, rc[0] + (fCap-1)/seatLetters.size()+(bCap-1)/seatLetters.size()+2);
           } else {
             fin.setNull(6, Types.INTEGER);
             fin.setNull(7, Types.CHAR);
@@ -172,6 +171,7 @@ public class Assignment2 {
 
       } catch (SQLException se){
         System.err.println("SQL Exception." + se.getMessage());
+	se.printStackTrace();
         return false;
       }
       return true;
@@ -335,8 +335,8 @@ public class Assignment2 {
    }
 
    private int[] getSeatLocation(int number){
-    int column = number % seatLetters.size();
-    int row = number/seatLetters.size();
+    int column = (number - 1) % seatLetters.size();
+    int row = (number - 1)/seatLetters.size() + 1;
     return new int[] {row, column};
    }
 
@@ -351,7 +351,7 @@ public class Assignment2 {
         Assignment2 a2 = new Assignment2();
         String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[0];
         if (a2.connectDB(url, args[0],"")){
-	        a2.bookSeat(1,6,"economy");
+	        a2.bookSeat(Integer.parseInt(args[1]),Integer.parseInt(args[2]),args[3]);
        }
       }
       catch(SQLException e)
