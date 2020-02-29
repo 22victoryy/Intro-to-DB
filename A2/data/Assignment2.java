@@ -342,7 +342,7 @@ public class Assignment2 {
         Assignment2 a2 = new Assignment2();
         String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[0];
         if (a2.connectDB(url, args[0],"")){
-	        a2.bookSeat(1,1,"economy");
+	        a2.bookSeat(1,6,"economy");
        }
       }
       catch(SQLException e)
