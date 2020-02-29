@@ -153,7 +153,7 @@ public class Assignment2 {
             fin.setNull(7, Types.CHAR);
           }
         }
-        
+
         String price = "SELECT count(*) AS count FROM Passenger WHERE id=" + passID;
         ps = connection.prepareStatement(passengerExistsQuery);
         rs = ps.executeQuery();
@@ -188,15 +188,6 @@ public class Assignment2 {
         PreparedStatement ps;
         ResultSet rs;
 
-        String allflights = "select * from flight where flightID =" + flightID;
-        // java.sql.Timestamp time = getCurrentTimeStamp();
-        ps = connection.prepareStatement(allflights);
-        rs = ps.executeQuery();
-        // check if the flight is empty
-        if (rs.getInt("count") == 0) {
-          System.out.println("The flight does not exist.");
-          return -1;
-        }
         // check flight exists
         if (!checkFlightExistsAndNotDeparted(flightID)){
           System.out.println("The flight either does not exist or alreadt has been departed");
@@ -204,13 +195,6 @@ public class Assignment2 {
         }
         else {
           // if flight departed
-          // seat is booked
-          String allseats = "select * from plane where flightID =" + flightID;
-          rs = ps.executeQuery();
-          
-          // check seat capacity
-          ps = connection.prepareStatement(allseats);
-          rs = ps.executeQuery();
           int countBooked, capacity;
           String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
                               + flightID + " and seat_class=?::seat_class";
@@ -230,15 +214,15 @@ public class Assignment2 {
           rs = ps.executeQuery();
           rs.first();
           capacity = rs.getInt("capacity");
-          if (capacity - countBooked == capacity) {
-              return -1;
+          if (capacity - countBooked >= 0) {
+              return 0;
           }
           else {
             // Does so by altering the database records for the bookings such that the
             // * seat and seat_class are updated if an upgrade can be processed.
             // sorts the fucking query into timestamp and update null
-            String getCustomers = "SELECT * FROM BOOKING WHERE SEAT_CLASS =" + economy +
-            " and SEAT_ROW is NULL and SEAT_LETTER is NULL" + "ORDER BY BOOKING.datetime";
+            String getCustomers = "SELECT * FROM BOOKING WHERE SEAT_CLASS ='" + economy +
+            "' and SEAT_ROW is NULL and SEAT_LETTER is NULL " + "ORDER BY BOOKING.datetime";
             ps = connection.prepareStatement(getCustomers);
             rs = ps.executeQuery();
 
