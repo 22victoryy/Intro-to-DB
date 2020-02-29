@@ -305,7 +305,7 @@ public class Assignment2 {
    private boolean checkFlightExistsAndNotDeparted(int flightID) throws SQLException{
       PreparedStatement ps;
       ResultSet rs;
-      String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE flight_num=" + flightID;
+      String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE id=" + flightID;
       ps = connection.prepareStatement(flightExistsQuery);
       rs = ps.executeQuery();
       rs.next();
