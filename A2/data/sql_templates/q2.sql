@@ -24,10 +24,17 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 -- Your query that answers the question goes below the "insert into" line:
 INSERT INTO q2
 
-select field
-  into variable
-  from table
- where condition
+CREATE VIEW delayedflights AS
+select *
+from flight, departure
+where flight.s_dep < departure.datetime;
+-- Gets all the delayed flights
+
+-- select id, price
+-- from delayedflights JOIN booked
+
+
+
 
 --  First find late flights
 -- 
