@@ -124,7 +124,6 @@ public class Assignment2 {
         rs = ps.executeQuery();
         rs.next();
         countBooked = rs.getInt("count");
-        maxID = rs.getInt("max_id");
 	      String airplaneClassCapacityQuery = "SELECT capacity_economy, capacity_business, capacity_first " +
 	                      "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
 	                      "WHERE flight.id="+ flightID;
