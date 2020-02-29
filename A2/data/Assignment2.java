@@ -199,7 +199,7 @@ public class Assignment2 {
         }
         else {
           // if flight departed
-          int countBooked, capacity;
+          int count;
           String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
                               + flightID + " and seat_class=?::seat_class";
           ps = connection.prepareStatement(bookedCountQuery);
@@ -215,7 +215,7 @@ public class Assignment2 {
 
           rs = ps.executeQuery();
           rs.first();
-          countBooked = rs.getInt("count");
+          count = rs.getInt("count");
 
           String EconomyCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
                           "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
@@ -232,48 +232,65 @@ public class Assignment2 {
           ps = connection.prepareStatement(EconomyCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          capacity = rs.getInt("capacity");
-          if (capacity - countBooked >= 0) {
-              return 0;
-          }
+          int capacityEconomy = rs.getInt("capacity");
+          // if (capacity - countBooked >= 0) {
+          //     return 0;
+          // }
+
           ps = connection.prepareStatement(BusinessCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          capacity = rs.getInt("capacity");
-          if (capacity - countBooked >= 0) {
-            return 0;
-          }
+          int capacityBusiness = rs.getInt("capacity");
+          // if (capacity - countBooked >= 0) {
+          //   return 0;
+          // }
           ps = connection.prepareStatement(FirstCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          capacity = rs.getInt("capacity");
-          if (capacity - countBooked >= 0) {
-            return 0;
-          }
-          else {
+          int capacityFirst = rs.getInt("capacity");
+          // if (capacity - countBooked >= 0) {
+          //   return 0;
+          // }
+          // else {
             // Does so by altering the database records for the bookings such that the
             // * seat and seat_class are updated if an upgrade can be processed.
             // sorts the fucking query into timestamp and update null
-            String getCustomers = "SELECT * FROM BOOKING WHERE SEAT_CLASS ='" + economy +
-            "' and SEAT_ROW is NULL and SEAT_LETTER is NULL " + "ORDER BY BOOKING.datetime";
-            ps = connection.prepareStatement(getCustomers);
-            rs = ps.executeQuery();
+          String getCustomers = "SELECT * FROM BOOKING WHERE SEAT_CLASS ='" + economy +
+          "' and SEAT_ROW is NULL and SEAT_LETTER is NULL " + "ORDER BY BOOKING.datetime";
+          ps = connection.prepareStatement(getCustomers);
+          rs = ps.executeQuery();
 
-            while (rs.next()) {
-              int id = rs.getInt("id");
-              String Update = "UPDATE BOOKING SET seat_class" + business + "WHERE seat_row = NULL and seat" +
-              "and seat_letter = NULL" + " and id=" + id;
-              ps = connection.prepareStatement(Update);
-              int updated = ps.executeUpdate();
-              if (updated == 0) {
-                System.out.println("The number of seats being updated are:" + updated);
-                return updated;
-              }
-              else {
-                System.out.println("The number of seats being updated are:" + updated);
-                return updated;
-              }
-            }
+          while (rs.next()) {
+            int id = rs.getInt("id");
+            String Update = "UPDATE BOOKING SET seat_class" + business + " and id=" + id;
+            ps = connection.prepareStatement(Update);
+
+            ps = connection.prepareStatement(EconomyCapacityQuery);
+            // if (capacityEconomy - countBooked >= 0) {
+            //   return 0;
+            // }
+            // if (capacityBusiness >= 0){
+            //   return 0;
+            // }
+            // if (capacityFirst >= 0) {
+            //   return 0;
+            // }
+            // update the query
+            
+
+
+
+            // int updated = ps.executeUpdate();
+            // if (updated == 0) {
+            //   System.out.println("The number of seats being updated are:" + updated);
+            //   return updated;
+            // }
+            // else {
+            //   System.out.println("The number of seats being updated are:" + updated);
+            //   return updated;
+            // }
+            // }
+            return -1;
           }
         }
     }
