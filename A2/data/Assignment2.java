@@ -204,17 +204,29 @@ public class Assignment2 {
               return -1;
           }
           else {
-            // Alter query and update
-            String alterUpdate = "ALTER TABLE ";
-            ps = connection.prepareStatement(alterUpdate);
-            int update = ps.executeUpdate();
-            if (update == 0) {
-              System.out.println("The number of seats being updated are:" + update);
-              return update;
-            }
-            else {
-              System.out.println("The number of seats being updated are:" + update);
-              return update;
+            // Does so by altering the database records for the bookings such that the
+            // * seat and seat_class are updated if an upgrade can be processed.
+            // sorts the fucking query into timestamp and update null
+            String getCustomers = "SELECT * FROM BOOKING WHERE SEAT_CLASS =" + economy +
+            " and SEAT_ROW is NULL and SEAT_LETTER is NULL" + "ORDER BY BOOKING.datetime";
+            ps = connection.prepareStatement(getCustomers);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+              int id = rs.getInt("id");
+              String business = "business";
+              String Update = "UPDATE BOOKING SET seat_class" + business + "WHERE seat_row = NULL and seat" +
+              "and seat_letter = NULL" + " and id=" + id;
+              ps = connection.prepareStatement(Update);
+              int updated = ps.executeUpdate();
+              if (updated == 0) {
+                System.out.println("The number of seats being updated are:" + updated);
+                return updated;
+              }
+              else {
+                System.out.println("The number of seats being updated are:" + updated);
+                return updated;
+              }
             }
           }
         }
@@ -244,10 +256,7 @@ public class Assignment2 {
 
    // Add more helper functions below if desired.
 
-   
 
-
-  
   /* ----------------------- Main method below  ------------------------- */
 
    public static void main(String[] args) {
@@ -261,7 +270,6 @@ public class Assignment2 {
         if (a2.connectDB(url, args[0],"")){
 	    a2.bookSeat(7,1,"economy");
 	    a2.bookSeat(1,11,"economy");
-	    
        }
       }
       catch(SQLException e)
@@ -269,7 +277,6 @@ public class Assignment2 {
         System.err.println("SQL Exception." + e.getMessage());
         return;
       }
-      
    }
 
 }
