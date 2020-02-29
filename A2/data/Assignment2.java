@@ -215,12 +215,14 @@ public class Assignment2 {
                               + flightID + " and seat_class='" + business+"'";
           ps = connection.prepareStatement(bookedBusinessQuery);
           rs = ps.executeQuery();
+          rs.next();
           BusinessBooked= rs.getInt("count");
 
           String bookedFirstQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
                               + flightID + " and seat_class='" + first+"'";
           ps = connection.prepareStatement(bookedFirstQuery);
           rs = ps.executeQuery();
+          rs.next();
           firstBooked = rs.getInt("count");
 
 
@@ -229,7 +231,7 @@ public class Assignment2 {
           "WHERE flight.id="+ flightID;
           ps = connection.prepareStatement(BusinessCapacityQuery);
           rs = ps.executeQuery();
-          rs.first();
+          rs.next();
           int capacityBusiness = rs.getInt("capacity");
 
 
@@ -238,7 +240,7 @@ public class Assignment2 {
           "WHERE flight.id="+ flightID;
           ps = connection.prepareStatement(FirstCapacityQuery);
           rs = ps.executeQuery();
-          rs.first();
+          rs.next();
           int capacityFirst = rs.getInt("capacity");
 
           int numUpgrades = 0;
