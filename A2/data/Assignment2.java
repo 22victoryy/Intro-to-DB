@@ -154,12 +154,16 @@ public class Assignment2 {
           }
         }
 
-        String price = "SELECT count(*) AS count FROM Passenger WHERE id=" + passID;
-        ps = connection.prepareStatement(passengerExistsQuery);
+        String priceQuery = "SELECT "+seatClass+" AS price FROM Price WHERE flight_id=" + flightID;
+        ps = connection.prepareStatement(priceQuery);
         rs = ps.executeQuery();
         rs.next();
-        fin.setInt(5, 500);
+        fin.setInt(5, rs.getInt("price"));
         
+        if (fin.executeUpdate() != 1){
+          System.err.println("Failed to add booking to relation Booking");
+          return false;
+        }
 
       } catch (SQLException se){
         System.err.println("SQL Exception." + se.getMessage());
@@ -338,8 +342,7 @@ public class Assignment2 {
         Assignment2 a2 = new Assignment2();
         String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[0];
         if (a2.connectDB(url, args[0],"")){
-	    a2.bookSeat(7,1,"economy");
-	    a2.bookSeat(1,11,"economy");
+	        a2.bookSeat(1,1,"economy");
        }
       }
       catch(SQLException e)
