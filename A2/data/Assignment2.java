@@ -135,7 +135,7 @@ public class Assignment2 {
 	        System.err.println("Not enough space");
 	        return false;
         }
-        
+
 	      bCap = rs.getInt("capacity_business");
         fCap = rs.getInt("capacity_first");
         System.out.println(maxID);
@@ -204,23 +204,38 @@ public class Assignment2 {
         }
         else {
           // if flight departed
-          int count;
-          String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-                              + flightID + " and seat_class=?::seat_class";
-          ps = connection.prepareStatement(bookedCountQuery);
+          int econBooked, BusinessBooked, firstBooked;
 
+          // rs = ps.executeQuery();
+          // rs.first();
           String economy = "economy";
-          ps.setString(1, economy);
+          // ps.setString(1, economy);
 
           String business = "business";
-          ps.setString(1, business);
+          // ps.setString(1, business);
 
           String first = "first";
-          ps.setString(1, first);
+          // ps.setString(1, first);
 
+
+          String bookedEconQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
+                              + flightID + " and seat_class=" + economy;
+          ps = connection.prepareStatement(bookedEconQuery);
           rs = ps.executeQuery();
-          rs.first();
-          count = rs.getInt("count");
+          econBooked = rs.getInt("booked_economy");
+
+          String bookedBusinessQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
+                              + flightID + " and seat_class=" + economy;
+          ps = connection.prepareStatement(bookedBusinessQuery);
+          rs = ps.executeQuery();
+          BusinessBooked= rs.getInt("booked_economy");
+
+          String bookedFirstQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
+                              + flightID + " and seat_class=" + economy;
+          ps = connection.prepareStatement(bookedFirstQuery);
+          rs = ps.executeQuery();
+          firstBooked = rs.getInt("booked_economy");
+
 
           String EconomyCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
                           "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
@@ -237,65 +252,63 @@ public class Assignment2 {
           ps = connection.prepareStatement(EconomyCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          int capacityEconomy = rs.getInt("capacity");
-          // if (capacity - countBooked >= 0) {
-          //     return 0;
-          // }
+          int capacityEconomy = rs.getInt("capacity_economy");
 
           ps = connection.prepareStatement(BusinessCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          int capacityBusiness = rs.getInt("capacity");
-          // if (capacity - countBooked >= 0) {
-          //   return 0;
-          // }
+          int capacityBusiness = rs.getInt("capacity_business");
+
           ps = connection.prepareStatement(FirstCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          int capacityFirst = rs.getInt("capacity");
-          // if (capacity - countBooked >= 0) {
-          //   return 0;
-          // }
-          // else {
-            // Does so by altering the database records for the bookings such that the
-            // * seat and seat_class are updated if an upgrade can be processed.
-            // sorts the fucking query into timestamp and update null
+          int capacityFirst = rs.getInt("capacity_first");
+
+
           String getCustomers = "SELECT * FROM BOOKING WHERE SEAT_CLASS ='" + economy +
           "' and SEAT_ROW is NULL and SEAT_LETTER is NULL " + "ORDER BY BOOKING.datetime";
           ps = connection.prepareStatement(getCustomers);
           rs = ps.executeQuery();
 
           while (rs.next()) {
+            ps = connection.prepareStatement(EconomyCapacityQuery);
+            if (capacityEconomy - econBooked == capacityEconomy) {
+              System.out.println("Economy class is full.");
+              return 0;
+            }
+            else{
+              // do something
+            }
+            if (capacityBusiness - BusinessBooked == 0){
+              System.out.println("Business class is full.");
+              return 0;
+            } 
+            else {
+              // do something
+            }
+            if (capacityFirst == firstBooked) {
+              System.out.println("Business class is full.");
+              return 0;
+            }
+            else {
+              // do something
+            }
+            // update the query
+
             int id = rs.getInt("id");
             String Update = "UPDATE BOOKING SET seat_class" + business + " and id=" + id;
             ps = connection.prepareStatement(Update);
 
-            ps = connection.prepareStatement(EconomyCapacityQuery);
-            // if (capacityEconomy - countBooked >= 0) {
-            //   return 0;
-            // }
-            // if (capacityBusiness >= 0){
-            //   return 0;
-            // }
-            // if (capacityFirst >= 0) {
-            //   return 0;
-            // }
-            // update the query
-            
 
-
-
-            // int updated = ps.executeUpdate();
-            // if (updated == 0) {
-            //   System.out.println("The number of seats being updated are:" + updated);
-            //   return updated;
-            // }
-            // else {
-            //   System.out.println("The number of seats being updated are:" + updated);
-            //   return updated;
-            // }
-            // }
-            return -1;
+            int updated = ps.executeUpdate();
+            if (updated == 0) {
+              System.out.println("The number of seats being updated are:" + updated);
+              return updated;
+            }
+            else {
+              System.out.println("The number of seats being updated are:" + updated);
+              return updated;
+            }
           }
         }
     }
