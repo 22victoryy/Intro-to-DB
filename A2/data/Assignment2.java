@@ -172,7 +172,7 @@ public class Assignment2 {
     *
     * If economy passengers left over without a seat (i.e. more than 10 overbooked passengers or not enough higher class seats), 
     * remove their bookings from the database.
-    * 
+    *
     * @param  flightID  The flight to upgrade passengers in.
     * @return           the number of passengers upgraded, or -1 if an error occured.
     */
@@ -201,7 +201,7 @@ public class Assignment2 {
           // seat is booked
           String allseats = "select * from plane where flightID =" + flightID;
           rs = ps.executeQuery();
-          
+
           // check seat capacity
           ps = connection.prepareStatement(allseats);
           rs = ps.executeQuery();
