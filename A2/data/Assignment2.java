@@ -212,16 +212,16 @@ public class Assignment2 {
           // ps.setString(1, first);
 
           String bookedBusinessQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-                              + flightID + " and seat_class=" + business;
+                              + flightID + " and seat_class='" + business+"'";
           ps = connection.prepareStatement(bookedBusinessQuery);
           rs = ps.executeQuery();
-          BusinessBooked= rs.getInt("booked_business");
+          BusinessBooked= rs.getInt("count");
 
           String bookedFirstQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-                              + flightID + " and seat_class=" + first;
+                              + flightID + " and seat_class='" + first+"'";
           ps = connection.prepareStatement(bookedFirstQuery);
           rs = ps.executeQuery();
-          firstBooked = rs.getInt("booked_first");
+          firstBooked = rs.getInt("count");
 
 
           String BusinessCapacityQuery = "SELECT capacity_"+ business +" AS capacity " +
@@ -230,7 +230,7 @@ public class Assignment2 {
           ps = connection.prepareStatement(BusinessCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          int capacityBusiness = rs.getInt("capacity_business");
+          int capacityBusiness = rs.getInt("capacity");
 
 
           String FirstCapacityQuery = "SELECT capacity_"+ first+" AS capacity " +
@@ -239,7 +239,7 @@ public class Assignment2 {
           ps = connection.prepareStatement(FirstCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
-          int capacityFirst = rs.getInt("capacity_first");
+          int capacityFirst = rs.getInt("capacity");
 
           int numUpgrades = 0;
           // int total_capacity = capacityBusiness + capacityFirst;
@@ -250,21 +250,25 @@ public class Assignment2 {
 
 
             if (totalBooked == totalCapacity) {
-              System.out.println("The plane is fucking full.");
+              System.out.println("The plane is full.");
               return numUpgrades;
             }
 
-            if (capacityBusiness - BusinessBooked == capacityBusiness) {
+            if (capacityBusiness == BusinessBooked) {
               System.out.println("Business class is full.");
 
-              if (capacityFirst - firstBooked == capacityFirst) {
+              if (capacityFirst == firstBooked) {
                 System.out.println("First class is full. No upgrades available.");
-                return 0;
+                return numUpgrades;
               }
               else {
                 // upgrade to first class, increment counter
                 int id = rs.getInt("id");
-                String Update = "UPDATE BOOKING SET seat_class" + business + " and id=" + id;
+                int[] rc = getSeatLocation(firstBooked + 1);
+                String col = seatLetters.get(rc[1]);
+                int row = rc[0];
+                String Update = "UPDATE BOOKING SET seat_class='" + business + "',"+
+                                " seat_row="+row+" seat_letter='"+col+"' WHERE id=" + id;
                 ps = connection.prepareStatement(Update);
 
                 ps.executeUpdate();
@@ -274,7 +278,11 @@ public class Assignment2 {
             }
             else {
               int id = rs.getInt("id");
-              String Update = "UPDATE BOOKING SET seat_class" + first + " and id=" + id;
+              int[] rc = getSeatLocation(firstBooked + 1);
+              String col = seatLetters.get(rc[1]);
+              int row = rc[0] + (capacityFirst)/seatLetters.size() + 1;
+              String Update = "UPDATE BOOKING SET seat_class='" + business + "',"+
+                              " seat_row="+row+" seat_letter='"+col+"' WHERE id=" + id;
               ps = connection.prepareStatement(Update);
 
               ps.executeUpdate();
