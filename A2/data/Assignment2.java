@@ -203,13 +203,7 @@ public class Assignment2 {
           return -1;
         }
         else {
-          // if flight departed
-          int econBooked, BusinessBooked, firstBooked;
-
-          // rs = ps.executeQuery();
-          // rs.first();
-          String economy = "economy";
-          // ps.setString(1, economy);
+          int BusinessBooked, firstBooked;
 
           String business = "business";
           // ps.setString(1, business);
@@ -217,97 +211,76 @@ public class Assignment2 {
           String first = "first";
           // ps.setString(1, first);
 
-
-          String bookedEconQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-                              + flightID + " and seat_class=" + economy;
-          ps = connection.prepareStatement(bookedEconQuery);
-          rs = ps.executeQuery();
-          econBooked = rs.getInt("booked_economy");
-
           String bookedBusinessQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-                              + flightID + " and seat_class=" + economy;
+                              + flightID + " and seat_class=" + business;
           ps = connection.prepareStatement(bookedBusinessQuery);
           rs = ps.executeQuery();
-          BusinessBooked= rs.getInt("booked_economy");
+          BusinessBooked= rs.getInt("booked_business");
 
           String bookedFirstQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
-                              + flightID + " and seat_class=" + economy;
+                              + flightID + " and seat_class=" + first;
           ps = connection.prepareStatement(bookedFirstQuery);
           rs = ps.executeQuery();
-          firstBooked = rs.getInt("booked_economy");
+          firstBooked = rs.getInt("booked_first");
 
-
-          String EconomyCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
-                          "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
-                          "WHERE flight.id="+ flightID;
 
           String BusinessCapacityQuery = "SELECT capacity_"+ business +" AS capacity " +
           "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
           "WHERE flight.id="+ flightID;
-
-          String FirstCapacityQuery = "SELECT capacity_"+ first+" AS capacity " +
-          "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
-          "WHERE flight.id="+ flightID;
-
-          ps = connection.prepareStatement(EconomyCapacityQuery);
-          rs = ps.executeQuery();
-          rs.first();
-          int capacityEconomy = rs.getInt("capacity_economy");
-
           ps = connection.prepareStatement(BusinessCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
           int capacityBusiness = rs.getInt("capacity_business");
 
+
+          String FirstCapacityQuery = "SELECT capacity_"+ first+" AS capacity " +
+          "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
+          "WHERE flight.id="+ flightID;
           ps = connection.prepareStatement(FirstCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
           int capacityFirst = rs.getInt("capacity_first");
 
-
-          String getCustomers = "SELECT * FROM BOOKING WHERE SEAT_CLASS ='" + economy +
-          "' and SEAT_ROW is NULL and SEAT_LETTER is NULL " + "ORDER BY BOOKING.datetime";
-          ps = connection.prepareStatement(getCustomers);
-          rs = ps.executeQuery();
-
+          int numUpgrades = 0;
+          // int total_capacity = capacityBusiness + capacityFirst;
           while (rs.next()) {
-            ps = connection.prepareStatement(EconomyCapacityQuery);
-            if (capacityEconomy - econBooked == capacityEconomy) {
-              System.out.println("Economy class is full.");
-              return 0;
+
+            int totalBooked = numUpgrades + BusinessBooked + firstBooked;
+            int totalCapacity = capacityBusiness + capacityFirst;
+
+
+            if (totalBooked == totalCapacity) {
+              System.out.println("The plane is fucking full.");
+              return numUpgrades;
             }
-            else{
-              // do something
-            }
-            if (capacityBusiness - BusinessBooked == 0){
+
+            if (capacityBusiness - BusinessBooked == capacityBusiness) {
               System.out.println("Business class is full.");
-              return 0;
-            } 
+
+              if (capacityFirst - firstBooked == capacityFirst) {
+                System.out.println("First class is full. No upgrades available.");
+                return 0;
+              }
+              else {
+                // upgrade to first class, increment counter
+                int id = rs.getInt("id");
+                String Update = "UPDATE BOOKING SET seat_class" + business + " and id=" + id;
+                ps = connection.prepareStatement(Update);
+
+                ps.executeUpdate();
+                numUpgrades ++;
+                firstBooked ++;
+              }
+            }
             else {
+              int id = rs.getInt("id");
+              String Update = "UPDATE BOOKING SET seat_class" + first + " and id=" + id;
+              ps = connection.prepareStatement(Update);
+
+              ps.executeUpdate();
               // do something
-            }
-            if (capacityFirst == firstBooked) {
-              System.out.println("Business class is full.");
-              return 0;
-            }
-            else {
-              // do something
-            }
-            // update the query
-
-            int id = rs.getInt("id");
-            String Update = "UPDATE BOOKING SET seat_class" + business + " and id=" + id;
-            ps = connection.prepareStatement(Update);
-
-
-            int updated = ps.executeUpdate();
-            if (updated == 0) {
-              System.out.println("The number of seats being updated are:" + updated);
-              return updated;
-            }
-            else {
-              System.out.println("The number of seats being updated are:" + updated);
-              return updated;
+              numUpgrades ++;
+              BusinessBooked++;
             }
           }
         }
@@ -318,6 +291,7 @@ public class Assignment2 {
     }
     return -1;
    }
+   // fuck this
 
 
    /* ----------------------- Helper functions below  ------------------------- */
