@@ -98,38 +98,63 @@ public class Assignment2 {
         rs = ps.executeQuery();
         rs.next();
         if (rs.getInt("count") == 0){
-	    System.err.println("Passenger does not exist");
-            return false;
+	        System.err.println("Passenger does not exist");
+          return false;
         }
         // check flight exists
-        String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE flight_num=" + flightID;
-        ps = connection.prepareStatement(flightExistsQuery);
-        rs = ps.executeQuery();
-        rs.next();
-        if (rs.getInt("count") == 0){
-	    System.err.println("Flight does not exist");
-            return false;
+        if (!checkFlightExistsAndNotDeparted(flightID)){
+          return false;
         }
-	// check empty or waitlist seats
-	  int countBooked, capacity;
-        String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
+	      // check empty or waitlist seats
+	      int countBooked, capacity, bCap, fCap, maxID;
+        String bookedCountQuery = "SELECT max(id) as max_id, count(*) as count FROM booking WHERE flight_id="
 	                           + flightID + " and seat_class=?::seat_class";
         ps = connection.prepareStatement(bookedCountQuery);
-	ps.setString(1, seatClass);
+	      ps.setString(1, seatClass);
         rs = ps.executeQuery();
         rs.next();
         countBooked = rs.getInt("count");
-	String airplaneClassCapacityQuery = "SELECT capacity_"+seatClass+" AS capacity " +
+        maxID = rs.getInt("max_id");
+	      String airplaneClassCapacityQuery = "SELECT capacity_economy, capacity_business, capacity_first " +
 	                      "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
 	                      "WHERE flight.id="+ flightID;
-	ps = connection.prepareStatement(airplaneClassCapacityQuery);
+	      ps = connection.prepareStatement(airplaneClassCapacityQuery);
         rs = ps.executeQuery();
         rs.next();
-	capacity = rs.getInt("capacity");
-	if ((seatClass == "economy" && capacity - countBooked < -10) || capacity - countBooked <= 0){
-	    System.err.println("Not enough space");
-	    return false;
-	}
+	      capacity = rs.getInt("capacity_"+seatClass);
+	      if ((seatClass == "economy" && capacity - countBooked < -10) || capacity - countBooked <= 0){
+	        System.err.println("Not enough space");
+	        return false;
+        }
+        
+	      bCap = rs.getInt("capacity_business");
+        fCap = rs.getInt("capacity_first");
+        
+        int row;
+        String col;
+        int[] rc = getSeatLocation(countBooked + 1);
+        col = seatLetters.get(rc[1]);
+        if (seatClass == "first"){
+          row = rc[0];
+        } else if (seatClass == "business"){
+          row = rc[0] + fCap/seatLetters.size();
+        } else {
+          if (capacity - countBooked > 0){
+            row = rc[0] + fCap/seatLetters.size()+bCap/seatLetters.size();
+          } else {
+            row = 0;
+            col = null;
+          }
+        }
+        String wow = "INSERT INTO Booking " + 
+                     "VALUES (?, ?,?,current_timestamp,?,"+seatClass+",?,?)";
+        ps = connection.prepareStatement(wow);
+        ps.setInt(1, maxID + 1);
+        ps.setInt(2, passID);
+        ps.setInt(3, flightID);
+        ps.setInt(4, price);
+        ps.setInt(5, price);
+        
       } catch (SQLException se){
         System.err.println("SQL Exception." + se.getMessage());
         return false;
@@ -237,7 +262,34 @@ public class Assignment2 {
    }
 
    // Add more helper functions below if desired.
+   private boolean checkFlightExistsAndNotDeparted(int flightID) throws SQLException{
+      PreparedStatement ps;
+      ResultSet rs;
+      String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE flight_num=" + flightID;
+      ps = connection.prepareStatement(flightExistsQuery);
+      rs = ps.executeQuery();
+      rs.next();
+      if (rs.getInt("count") == 0){
+        System.err.println("Flight does not exist");
+        return false;
+      }
+      String flightDepartedQuery = "SELECT count(*) AS count" +
+                                  "FROM Departure WHERE flight_id=" + flightID;
+      ps = connection.prepareStatement(flightDepartedQuery);
+      rs = ps.executeQuery();
+      rs.next();
+      if (rs.getInt("count") > 0){
+        System.err.println("Flight already departed :(");
+        return false;
+      }
+      return true;
+   }
 
+   private int[] getSeatLocation(int number){
+    int column = number % seatLetters.size();
+    int row = number/seatLetters.size();
+    return new int[] {row, column};
+   }
 
   
   /* ----------------------- Main method below  ------------------------- */
