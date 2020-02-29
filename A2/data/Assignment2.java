@@ -137,7 +137,7 @@ public class Assignment2 {
         fin.setInt(1, maxID + 1);
         fin.setInt(2, passID);
         fin.setInt(3, flightID);
-        fin.setString(4, seatClass);
+        fin.setString(5, seatClass);
 
         int[] rc = getSeatLocation(countBooked + 1);
         fin.setString(7,seatLetters.get(rc[1]));
@@ -158,7 +158,7 @@ public class Assignment2 {
         ps = connection.prepareStatement(priceQuery);
         rs = ps.executeQuery();
         rs.next();
-        fin.setInt(5, rs.getInt("price"));
+        fin.setInt(4, rs.getInt("price"));
         
         if (fin.executeUpdate() != 1){
           System.err.println("Failed to add booking to relation Booking");
