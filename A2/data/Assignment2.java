@@ -110,8 +110,14 @@ public class Assignment2 {
           return false;
         }
 	      // check empty or waitlist seats
-	      int countBooked, capacity, bCap, fCap, maxID;
-        String bookedCountQuery = "SELECT max(id) as max_id, count(*) as count FROM booking WHERE flight_id="
+        int countBooked, capacity, bCap, fCap, maxID;
+        String IDQuery = "SELECT max(id) as max_id FROM booking";
+        ps = connection.prepareStatement(IDQuery);
+        rs = ps.executeQuery();
+        rs.next();
+        maxID = rs.getInt("max_id");
+
+        String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
 	                           + flightID + " and seat_class=?::seat_class";
         ps = connection.prepareStatement(bookedCountQuery);
 	      ps.setString(1, seatClass);
@@ -133,7 +139,7 @@ public class Assignment2 {
         
 	      bCap = rs.getInt("capacity_business");
         fCap = rs.getInt("capacity_first");
-        
+        System.out.println(maxID);
         fin.setInt(1, maxID + 1);
         fin.setInt(2, passID);
         fin.setInt(3, flightID);
