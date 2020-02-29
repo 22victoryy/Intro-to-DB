@@ -110,15 +110,20 @@ public class Assignment2 {
           return false;
         }
 	      // check empty or waitlist seats
-	      int countBooked, capacity, bCap, fCap, maxID;
-        String bookedCountQuery = "SELECT max(id) as max_id, count(*) as count FROM booking WHERE flight_id="
+        int countBooked, capacity, bCap, fCap, maxID;
+        String IDQuery = "SELECT max(id) as max_id FROM booking";
+        ps = connection.prepareStatement(IDQuery);
+        rs = ps.executeQuery();
+        rs.next();
+        maxID = rs.getInt("max_id");
+
+        String bookedCountQuery = "SELECT count(*) as count FROM booking WHERE flight_id="
 	                           + flightID + " and seat_class=?::seat_class";
         ps = connection.prepareStatement(bookedCountQuery);
 	      ps.setString(1, seatClass);
         rs = ps.executeQuery();
         rs.next();
         countBooked = rs.getInt("count");
-        maxID = rs.getInt("max_id");
 	      String airplaneClassCapacityQuery = "SELECT capacity_economy, capacity_business, capacity_first " +
 	                      "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
 	                      "WHERE flight.id="+ flightID;
@@ -133,11 +138,11 @@ public class Assignment2 {
         
 	      bCap = rs.getInt("capacity_business");
         fCap = rs.getInt("capacity_first");
-        
+        System.out.println(maxID);
         fin.setInt(1, maxID + 1);
         fin.setInt(2, passID);
         fin.setInt(3, flightID);
-        fin.setString(4, seatClass);
+        fin.setString(5, seatClass);
 
         int[] rc = getSeatLocation(countBooked + 1);
         fin.setString(7,seatLetters.get(rc[1]));
@@ -158,7 +163,7 @@ public class Assignment2 {
         ps = connection.prepareStatement(priceQuery);
         rs = ps.executeQuery();
         rs.next();
-        fin.setInt(5, rs.getInt("price"));
+        fin.setInt(4, rs.getInt("price"));
         
         if (fin.executeUpdate() != 1){
           System.err.println("Failed to add booking to relation Booking");
@@ -322,7 +327,7 @@ public class Assignment2 {
    private boolean checkFlightExistsAndNotDeparted(int flightID) throws SQLException{
       PreparedStatement ps;
       ResultSet rs;
-      String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE flight_num=" + flightID;
+      String flightExistsQuery = "SELECT count(*) AS count FROM Flight WHERE id=" + flightID;
       ps = connection.prepareStatement(flightExistsQuery);
       rs = ps.executeQuery();
       rs.next();
@@ -330,7 +335,7 @@ public class Assignment2 {
         System.err.println("Flight does not exist");
         return false;
       }
-      String flightDepartedQuery = "SELECT count(*) AS count" +
+      String flightDepartedQuery = "SELECT count(*) AS count " +
                                   "FROM Departure WHERE flight_id=" + flightID;
       ps = connection.prepareStatement(flightDepartedQuery);
       rs = ps.executeQuery();
@@ -359,7 +364,7 @@ public class Assignment2 {
         Assignment2 a2 = new Assignment2();
         String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[0];
         if (a2.connectDB(url, args[0],"")){
-	        a2.bookSeat(1,1,"economy");
+	        a2.bookSeat(1,6,"economy");
        }
       }
       catch(SQLException e)
