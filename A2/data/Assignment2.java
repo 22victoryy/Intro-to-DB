@@ -152,8 +152,8 @@ public class Assignment2 {
         ps.setInt(1, maxID + 1);
         ps.setInt(2, passID);
         ps.setInt(3, flightID);
-        ps.setInt(4, price);
-        ps.setInt(5, price);
+        //ps.setInt(4, price);
+        //ps.setInt(5, price);
         
       } catch (SQLException se){
         System.err.println("SQL Exception." + se.getMessage());
