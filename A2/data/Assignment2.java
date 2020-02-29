@@ -244,7 +244,7 @@ public class Assignment2 {
           int capacityFirst = rs.getInt("capacity");
 
           String overBookedQuery = "SELECT * FROM booking WHERE flight_id="
-                              + flightID + " and seat_row IS NULL";
+                              + flightID + " and row IS NULL";
           ps = connection.prepareStatement(overBookedQuery);
           rs = ps.executeQuery();
 
@@ -274,8 +274,8 @@ public class Assignment2 {
                 int[] rc = getSeatLocation(firstBooked + 1);
                 String col = seatLetters.get(rc[1]);
                 int row = rc[0];
-                String Update = "UPDATE BOOKING SET seat_class='" + business + "',"+
-                                " seat_row="+row+" seat_letter='"+col+"' WHERE id=" + id;
+                String Update = "UPDATE BOOKING SET seat_class='" + first + "',"+
+                                " row="+row+", letter='"+col+"' WHERE id=" + id;
                 ps = connection.prepareStatement(Update);
 
                 ps.executeUpdate();
@@ -285,11 +285,11 @@ public class Assignment2 {
             }
             else {
               int id = rs.getInt("id");
-              int[] rc = getSeatLocation(firstBooked + 1);
+              int[] rc = getSeatLocation(BusinessBooked + 1);
               String col = seatLetters.get(rc[1]);
               int row = rc[0] + (capacityFirst)/seatLetters.size() + 1;
               String Update = "UPDATE BOOKING SET seat_class='" + business + "',"+
-                              " seat_row="+row+" seat_letter='"+col+"' WHERE id=" + id;
+                              " row="+row+", letter='"+col+"' WHERE id=" + id;
               ps = connection.prepareStatement(Update);
 
               ps.executeUpdate();
