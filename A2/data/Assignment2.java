@@ -206,20 +206,49 @@ public class Assignment2 {
 
           String economy = "economy";
           ps.setString(1, economy);
+
+          String business = "business";
+          ps.setString(1, business);
+
+          String first = "first";
+          ps.setString(1, first);
+
           rs = ps.executeQuery();
           rs.first();
           countBooked = rs.getInt("count");
 
-          String airplaneClassCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
+          String EconomyCapacityQuery = "SELECT capacity_"+ economy +" AS capacity " +
                           "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
                           "WHERE flight.id="+ flightID;
 
-          ps = connection.prepareStatement(airplaneClassCapacityQuery);
+          String BusinessCapacityQuery = "SELECT capacity_"+ business +" AS capacity " +
+          "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
+          "WHERE flight.id="+ flightID;
+
+          String FirstCapacityQuery = "SELECT capacity_"+ first+" AS capacity " +
+          "FROM flight JOIN plane ON flight.plane=plane.tail_number " +
+          "WHERE flight.id="+ flightID;
+
+          ps = connection.prepareStatement(EconomyCapacityQuery);
           rs = ps.executeQuery();
           rs.first();
           capacity = rs.getInt("capacity");
           if (capacity - countBooked >= 0) {
               return 0;
+          }
+          ps = connection.prepareStatement(BusinessCapacityQuery);
+          rs = ps.executeQuery();
+          rs.first();
+          capacity = rs.getInt("capacity");
+          if (capacity - countBooked >= 0) {
+            return 0;
+          }
+          ps = connection.prepareStatement(FirstCapacityQuery);
+          rs = ps.executeQuery();
+          rs.first();
+          capacity = rs.getInt("capacity");
+          if (capacity - countBooked >= 0) {
+            return 0;
           }
           else {
             // Does so by altering the database records for the bookings such that the
@@ -232,7 +261,6 @@ public class Assignment2 {
 
             while (rs.next()) {
               int id = rs.getInt("id");
-              String business = "business";
               String Update = "UPDATE BOOKING SET seat_class" + business + "WHERE seat_row = NULL and seat" +
               "and seat_letter = NULL" + " and id=" + id;
               ps = connection.prepareStatement(Update);
