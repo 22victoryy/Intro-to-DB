@@ -359,7 +359,11 @@ public class Assignment2 {
         Assignment2 a2 = new Assignment2();
         String url = "jdbc:postgresql://localhost:5432/csc343h-"+args[0];
         if (a2.connectDB(url, args[0],"")){
-	        a2.bookSeat(Integer.parseInt(args[1]),Integer.parseInt(args[2]),args[3]);
+          if (args[1].equals("book")){
+            a2.bookSeat(Integer.parseInt(args[2]),Integer.parseInt(args[3]),args[4]);
+          } else {
+            a2.upgrade(Integer.parseInt(args[2]));
+          }
        }
       }
       catch(SQLException e)
