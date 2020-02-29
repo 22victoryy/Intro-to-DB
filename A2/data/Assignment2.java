@@ -91,6 +91,10 @@ public class Assignment2 {
       // Implement this method!
       // check passenger exists
       try {
+        String finalcountdown = "INSERT INTO Booking " + 
+        "VALUES (?, ?,?,current_timestamp,?,?::seat_class,?,?)";
+        PreparedStatement fin = connection.prepareStatement(finalcountdown);
+
         PreparedStatement ps;
         ResultSet rs;
         String passengerExistsQuery = "SELECT count(*) AS count FROM Passenger WHERE id=" + passID;
@@ -130,30 +134,32 @@ public class Assignment2 {
 	      bCap = rs.getInt("capacity_business");
         fCap = rs.getInt("capacity_first");
         
-        int row;
-        String col;
+        fin.setInt(1, maxID + 1);
+        fin.setInt(2, passID);
+        fin.setInt(3, flightID);
+        fin.setString(4, seatClass);
+
         int[] rc = getSeatLocation(countBooked + 1);
-        col = seatLetters.get(rc[1]);
+        fin.setString(7,seatLetters.get(rc[1]));
         if (seatClass == "first"){
-          row = rc[0];
+          fin.setInt(6, rc[0]);
         } else if (seatClass == "business"){
-          row = rc[0] + fCap/seatLetters.size();
+          fin.setInt(6, rc[0] + fCap/seatLetters.size());
         } else {
           if (capacity - countBooked > 0){
-            row = rc[0] + fCap/seatLetters.size()+bCap/seatLetters.size();
+            fin.setInt(6, rc[0] + fCap/seatLetters.size()+bCap/seatLetters.size());
           } else {
-            row = 0;
-            col = null;
+            fin.setNull(6, Types.INTEGER);
+            fin.setNull(7, Types.CHAR);
           }
         }
-        String wow = "INSERT INTO Booking " + 
-                     "VALUES (?, ?,?,current_timestamp,?,"+seatClass+",?,?)";
-        ps = connection.prepareStatement(wow);
-        ps.setInt(1, maxID + 1);
-        ps.setInt(2, passID);
-        ps.setInt(3, flightID);
-        //ps.setInt(4, price);
-        //ps.setInt(5, price);
+        
+        String price = "SELECT count(*) AS count FROM Passenger WHERE id=" + passID;
+        ps = connection.prepareStatement(passengerExistsQuery);
+        rs = ps.executeQuery();
+        rs.next();
+        fin.setInt(5, 500);
+        
 
       } catch (SQLException se){
         System.err.println("SQL Exception." + se.getMessage());
