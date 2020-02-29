@@ -291,6 +291,7 @@ public class Assignment2 {
               BusinessBooked++;
             }
           }
+          return numUpgrades;
         }
     }
     catch (SQLException e) {
