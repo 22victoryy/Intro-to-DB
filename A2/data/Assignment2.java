@@ -243,6 +243,11 @@ public class Assignment2 {
           rs.next();
           int capacityFirst = rs.getInt("capacity");
 
+          String overBookedQuery = "SELECT * FROM booking WHERE flight_id="
+                              + flightID + " and seat_row IS NULL";
+          ps = connection.prepareStatement(overBookedQuery);
+          rs = ps.executeQuery();
+
           int numUpgrades = 0;
           // int total_capacity = capacityBusiness + capacityFirst;
           while (rs.next()) {
@@ -364,7 +369,7 @@ public class Assignment2 {
           if (args[1].equals("book")){
             a2.bookSeat(Integer.parseInt(args[2]),Integer.parseInt(args[3]),args[4]);
           } else {
-            a2.upgrade(Integer.parseInt(args[2]));
+            System.out.println("Updated: " + a2.upgrade(Integer.parseInt(args[2])));
           }
        }
       }
