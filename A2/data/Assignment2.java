@@ -285,7 +285,7 @@ public class Assignment2 {
         System.err.println("Flight does not exist");
         return false;
       }
-      String flightDepartedQuery = "SELECT count(*) AS count" +
+      String flightDepartedQuery = "SELECT count(*) AS count " +
                                   "FROM Departure WHERE flight_id=" + flightID;
       ps = connection.prepareStatement(flightDepartedQuery);
       rs = ps.executeQuery();
