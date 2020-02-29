@@ -178,7 +178,7 @@ public class Assignment2 {
     *
     * If economy passengers left over without a seat (i.e. more than 10 overbooked passengers or not enough higher class seats), 
     * remove their bookings from the database.
-    * 
+    *
     * @param  flightID  The flight to upgrade passengers in.
     * @return           the number of passengers upgraded, or -1 if an error occured.
     */
