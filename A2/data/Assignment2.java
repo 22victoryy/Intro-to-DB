@@ -153,13 +153,14 @@ public class Assignment2 {
             fin.setNull(7, Types.CHAR);
           }
         }
-
+        
         String price = "SELECT count(*) AS count FROM Passenger WHERE id=" + passID;
         ps = connection.prepareStatement(passengerExistsQuery);
         rs = ps.executeQuery();
         rs.next();
         fin.setInt(5, 500);
         
+
       } catch (SQLException se){
         System.err.println("SQL Exception." + se.getMessage());
         return false;
@@ -189,13 +190,16 @@ public class Assignment2 {
 
         String allflights = "select * from flight where flightID =" + flightID;
         // java.sql.Timestamp time = getCurrentTimeStamp();
-
         ps = connection.prepareStatement(allflights);
-
         rs = ps.executeQuery();
         // check if the flight is empty
         if (rs.getInt("count") == 0) {
           System.out.println("The flight does not exist.");
+          return -1;
+        }
+        // check flight exists
+        if (!checkFlightExistsAndNotDeparted(flightID)){
+          System.out.println("The flight either does not exist or alreadt has been departed");
           return -1;
         }
         else {
@@ -203,11 +207,7 @@ public class Assignment2 {
           // seat is booked
           String allseats = "select * from plane where flightID =" + flightID;
           rs = ps.executeQuery();
-          // if flight departed, then print "no seats available", return -1
-          // else, execute below condition
-
-
-
+          
           // check seat capacity
           ps = connection.prepareStatement(allseats);
           rs = ps.executeQuery();
