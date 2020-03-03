@@ -92,7 +92,7 @@ public class Assignment2 {
       // check passenger exists
       try {
         String finalcountdown = "INSERT INTO Booking " + 
-        "VALUES (?, ?,?,current_timestamp,?,?::seat_class,?,?)";
+        "VALUES (?, ?,?,?,?,?::seat_class,?,?)";
         PreparedStatement fin = connection.prepareStatement(finalcountdown);
 
         PreparedStatement ps;
@@ -141,20 +141,21 @@ public class Assignment2 {
         fin.setInt(1, maxID + 1);
         fin.setInt(2, passID);
         fin.setInt(3, flightID);
-        fin.setString(5, seatClass);
+        fin.setTimestamp(4, getCurrentTimeStamp());
+        fin.setString(6, seatClass);
 
         int[] rc = getSeatLocation(countBooked + 1);
-        fin.setString(7,seatLetters.get(rc[1]));
+        fin.setString(8,seatLetters.get(rc[1]));
         if (seatClass.equals("first")){
-          fin.setInt(6, rc[0]);
+          fin.setInt(7, rc[0]);
         } else if (seatClass.equals("business")){
-          fin.setInt(6, rc[0] + (fCap-1)/seatLetters.size() + 1);
+          fin.setInt(7, rc[0] + (fCap-1)/seatLetters.size() + 1);
         } else {
           if (capacity - countBooked > 0){
-            fin.setInt(6, rc[0] + (fCap-1)/seatLetters.size()+(bCap-1)/seatLetters.size()+2);
+            fin.setInt(7, rc[0] + (fCap-1)/seatLetters.size()+(bCap-1)/seatLetters.size()+2);
           } else {
-            fin.setNull(6, Types.INTEGER);
-            fin.setNull(7, Types.CHAR);
+            fin.setNull(7, Types.INTEGER);
+            fin.setNull(8, Types.CHAR);
           }
         }
 
@@ -162,7 +163,7 @@ public class Assignment2 {
         ps = connection.prepareStatement(priceQuery);
         rs = ps.executeQuery();
         rs.next();
-        fin.setInt(4, rs.getInt("price"));
+        fin.setInt(5, rs.getInt("price"));
         
         if (fin.executeUpdate() != 1){
           System.err.println("Failed to add booking to relation Booking");
@@ -314,7 +315,7 @@ public class Assignment2 {
     * @return           Timestamp of current time.
     */
    private java.sql.Timestamp getCurrentTimeStamp() {
-      java.util.Date now = new java.util.Date();
+      Date now = new Date();
       return new java.sql.Timestamp(now.getTime());
    }
 

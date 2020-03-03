@@ -14,6 +14,7 @@ CREATE TABLE q1 (
 -- (But give them better names!) The IF EXISTS avoids generating an error
 -- the first time this file is imported.
 DROP VIEW IF EXISTS intermediate_step CASCADE;
+DROP VIEW IF EXISTS finished_flights CASCADE;
 
 
 -- Define views for your intermediate steps here:
@@ -22,7 +23,6 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 -- Your query that answers the question goes below the "insert into" line:
 
 CREATE VIEW finished_flights AS
-
 select pass_id, airline as airlines
 from Flight, Departure, Booking
 where Flight.id = Departure.flight_id and Booking.flight_id = Departure.flight_id;

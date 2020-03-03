@@ -17,7 +17,14 @@ CREATE TABLE q2 (
 -- the first time this file is imported.
 DROP VIEW IF EXISTS intermediate_step CASCADE;
 
+-- date_part('year', booking.datetime)
 
+-- select *,
+-- CASE
+-- WHEN condition THEN value
+-- ELSE
+-- END AS attribute_name
+-- FROM table;
 -- Define views for your intermediate steps here:
 
 
