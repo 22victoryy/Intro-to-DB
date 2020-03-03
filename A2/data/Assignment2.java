@@ -252,13 +252,13 @@ public class Assignment2 {
           // int total_capacity = capacityBusiness + capacityFirst;
           while (rs.next()) {
 
-            int totalBooked = numUpgrades + BusinessBooked + firstBooked;
+            int totalBooked = BusinessBooked + firstBooked;
             int totalCapacity = capacityBusiness + capacityFirst;
 
             int id = rs.getInt("id");
             if (totalBooked == totalCapacity) {
               System.out.println("Kicking "+id+" out of the plane.");
-              String deleteBooking = "DELETE FROM Booking" + 
+              String deleteBooking = "DELETE FROM Booking " + 
                                      "WHERE id="+ id;
               ps = connection.prepareStatement(deleteBooking);
               ps.executeUpdate();
