@@ -15,7 +15,7 @@ CREATE TABLE q2 (
 -- Do this for each of the views that define your intermediate steps.  
 -- (But give them better names!) The IF EXISTS avoids generating an error 
 -- the first time this file is imported.
-DROP VIEW IF EXISTS intermediate_step CASCADE;
+DROP VIEW IF EXISTS delayedflights CASCADE;
 
 -- date_part('year', booking.datetime)
 
@@ -30,9 +30,23 @@ DROP VIEW IF EXISTS intermediate_step CASCADE;
 
 -- Your query that answers the question goes below the "insert into" line:
 CREATE VIEW delayedflights AS
-select *
-from flight, departure
-where flight.s_dep < departure.datetime;
+select id, airline, outbound, inbound, date_part('year', flight.s_dep) AS year,
+       departure.datetime - flight.s_dep as dep_interval,
+       arrival.datetime - flight.s_arv as arv_interval
+from flight, arrival, departure
+where flight.id = arrival.flight_id and
+      flight.id = departure.flight_id and
+      flight.s_dep < departure.datetime;
+
+CREATE VIEW delayedflightsType AS
+select id, airline, year,
+CASE 
+    WHEN a1.country = a2.country THEN 'domestic'
+    WHEN a1.country <> a2.country THEN 'international'
+    ELSE NULL
+END AS kind
+from delayedflights, airport a1, airport a2
+where outbound=a1.code and inbound=a2.code;
 
 INSERT INTO q2
 
