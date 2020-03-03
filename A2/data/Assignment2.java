@@ -255,36 +255,29 @@ public class Assignment2 {
             int totalBooked = numUpgrades + BusinessBooked + firstBooked;
             int totalCapacity = capacityBusiness + capacityFirst;
 
-
+            int id = rs.getInt("id");
             if (totalBooked == totalCapacity) {
-              System.out.println("The plane is full.");
-              return numUpgrades;
-            }
-
-            if (capacityBusiness == BusinessBooked) {
+              System.out.println("Kicking "+id+" out of the plane.");
+              String deleteBooking = "DELETE FROM Booking" + 
+                                     "WHERE id="+ id;
+              ps = connection.prepareStatement(deleteBooking);
+              ps.executeUpdate();
+            } else if (capacityBusiness == BusinessBooked) {
               System.out.println("Business class is full.");
 
-              if (capacityFirst == firstBooked) {
-                System.out.println("First class is full. No upgrades available.");
-                return numUpgrades;
-              }
-              else {
-                // upgrade to first class, increment counter
-                int id = rs.getInt("id");
-                int[] rc = getSeatLocation(firstBooked + 1);
-                String col = seatLetters.get(rc[1]);
-                int row = rc[0];
-                String Update = "UPDATE BOOKING SET seat_class='" + first + "',"+
-                                " row="+row+", letter='"+col+"' WHERE id=" + id;
-                ps = connection.prepareStatement(Update);
+              // upgrade to first class, increment counter
+              int[] rc = getSeatLocation(firstBooked + 1);
+              String col = seatLetters.get(rc[1]);
+              int row = rc[0];
+              String Update = "UPDATE BOOKING SET seat_class='" + first + "',"+
+                              " row="+row+", letter='"+col+"' WHERE id=" + id;
+              ps = connection.prepareStatement(Update);
 
-                ps.executeUpdate();
-                numUpgrades ++;
-                firstBooked ++;
-              }
+              ps.executeUpdate();
+              numUpgrades ++;
+              firstBooked ++;
             }
             else {
-              int id = rs.getInt("id");
               int[] rc = getSeatLocation(BusinessBooked + 1);
               String col = seatLetters.get(rc[1]);
               int row = rc[0] + (capacityFirst)/seatLetters.size() + 1;
