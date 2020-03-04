@@ -54,7 +54,8 @@ FROM delayedflightsType
 WHERE (kind='international' and dep_interval > '10:00:00') or
       (kind='domestic' and dep_interval > '12:00:00');
 
-CREATE VIEW totalprice AS
+-- CREATE VIEW totalprice AS
+INSERT INTO q2
 SELECT airline, name, year, seat_class, SUM(booking.price)
 FROM (SELECT * FROM thirtyfivepercenters
       UNION
@@ -75,4 +76,3 @@ GROUP BY airline, name, year, seat_class;
 
 
 
-INSERT INTO q2
