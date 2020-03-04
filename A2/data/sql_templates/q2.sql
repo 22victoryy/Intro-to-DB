@@ -64,13 +64,10 @@ WHERE money.id = booking.flight_id;
 -- fuck you
 -- FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
 
-INSERT INTO q2
+-- INSERT INTO q2
 
 
 -- Gets all the delayed flights
 
 -- select id, price
 -- from delayedflights JOIN booked
-
-
---  First find late flights
