@@ -109,6 +109,7 @@ from very_low NATURAL JOIN low natural join fair natural join normal natural joi
 
 
 -- Your query that answers the question goes below the "insert into" line:
--- INSERT INTO q4
+INSERT INTO q4 
+select * from contingency;
 
 
