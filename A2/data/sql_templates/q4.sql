@@ -103,6 +103,7 @@ GROUP BY very_low.air, very_low.tail;
 
 
 
+-- fuck 
 
 
 -- Your query that answers the question goes below the "insert into" line:
