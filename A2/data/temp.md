@@ -7,7 +7,6 @@
 ### arrival(*flight_id,timestamp)
 
 ### booking(*id,pass\_id,flight\_id,datetime,price,seat\_class,seat\_row,seat\_letter)
-
 ### departure(*flight\_id,timestamp)
 
 ### flight(*id,airline,flight\_num,plane,outbound,inbound,scheduled\_departure,scheduled\_arrival)
