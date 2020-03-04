@@ -39,21 +39,23 @@ FROM departure, flight
 WHERE departure.flight_id = flight.id;
 
 CREATE VIEW departed AS
-SELECT departedplanes.id as id, airline as air, plane as tail, count(*) as booked
+SELECT departedplanes.id as id, airline as air, plane as tail, count(booking.id) as booked
 FROM departedplanes
-INNER JOIN booking
+LEFT JOIN booking
 ON departedplanes.flight_id = booking.flight_id
 GROUP BY departedplanes.id,airline,plane;
 
 CREATE VIEW p AS
-SELECT Plane.airline as air, Plane.tail_number as tail, booked/(capacity_economy+Capacity_business+Capacity_first) as percentage
+SELECT Plane.airline as air, Plane.tail_number as tail, cast(booked AS decimal)/(capacity_economy+Capacity_business+Capacity_first) as percentage
 FROM departed RIGHT JOIN Plane ON Plane.tail_number=departed.tail;
 
 CREATE VIEW very_low AS
-Select air, tail, count(*) as a
-FROM p
-WHERE p.percentage < 0.2
-GROUP BY air, tail;
+Select air, tail,
+CASE
+    WHEN p.percentage < 0.2 THEN 1
+    ELSE 0
+END as a
+FROM p;
 
 CREATE VIEW low AS
 Select air, tail, count(*) as b
