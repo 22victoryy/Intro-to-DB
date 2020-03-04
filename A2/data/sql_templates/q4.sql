@@ -33,7 +33,7 @@ ON departedplanes.flight_id = booking.flight_id
 GROUP BY departedplanes.id,airline,plane;
 
 CREATE VIEW p AS
-SELECT Plain.airline as air, Plain.tail_number as tail, booked/(capacity_economy+Capacity_business+Capacity_first) as percentage
+SELECT Plane.airline as air, Plane.tail_number as tail, booked/(capacity_economy+Capacity_business+Capacity_first) as percentage
 FROM departed RIGHT JOIN Plane ON Plane.tail_number=departed.tail;
 
 CREATE VIEW very_low AS
