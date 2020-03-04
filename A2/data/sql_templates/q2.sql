@@ -58,8 +58,10 @@ CREATE VIEW total AS
 SELECT SUM(booking.price)
 FROM (SELECT * FROM thirtyfivepercenters
       UNION
-      SELECT * FROM fiftypercenters)
-      AS U INNER JOIN boooking;
+      SELECT * FROM fiftypercenters) money, booking
+WHERE money.id = booking.flight_id;
+
+-- fuck you
 -- FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
 
 INSERT INTO q2
