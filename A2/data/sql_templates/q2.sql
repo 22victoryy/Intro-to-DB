@@ -56,7 +56,11 @@ WHERE (kind='international' and dep_interval > '10:00:00') or
 
 CREATE VIEW total AS
 SELECT SUM(booking.price)
-FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
+FROM (SELECT * FROM thirtyfivepercenters
+      UNION
+      SELECT * FROM fiftypercenters)
+      AS U INNER JOIN boooking;
+-- FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
 
 INSERT INTO q2
 
