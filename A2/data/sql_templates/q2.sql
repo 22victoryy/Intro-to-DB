@@ -55,18 +55,17 @@ WHERE (kind='international' and dep_interval > '10:00:00') or
       (kind='domestic' and dep_interval > '12:00:00');
 
 CREATE VIEW totalprice AS
-SELECT airline, year, seat_class, SUM(booking.price)
+SELECT airline, name, year, seat_class, SUM(booking.price)
 FROM (SELECT * FROM thirtyfivepercenters
       UNION
-      SELECT * FROM fiftypercenters) money, booking
+      SELECT * FROM fiftypercenters) money, booking, airline
 WHERE money.id = booking.flight_id
-GROUP BY airline, year, seat_class;
+GROUP BY airline, name, year, seat_class;
 
 -- fuck you
 -- FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
 
 -- INSERT INTO q2
-
 
 -- Gets all the delayed flights
 
