@@ -92,6 +92,7 @@ very_low.tail=low.tail and low.tail=fair.tail and fair.tail=normal.tail and norm
 
 
 
+-- fuck 
 
 
 -- Your query that answers the question goes below the "insert into" line:
