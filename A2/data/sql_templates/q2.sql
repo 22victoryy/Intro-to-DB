@@ -20,7 +20,6 @@ DROP VIEW IF EXISTS delayedflightsType CASCADE;
 
 -- Define views for your intermediate steps here:
 
-
 -- Your query that answers the question goes below the "insert into" line:
 CREATE VIEW delayedflights AS
 select id, airline, outbound, inbound, date_part('year', flight.s_dep) AS year,
@@ -53,7 +52,7 @@ CREATE VIEW fiftypercenters AS
 SELECT id, airline, year, 0.5 as multiple
 FROM delayedflightsType
 WHERE (kind='international' and dep_interval > '10:00:00') or
-      (kind='domestic' and dep_interval > '12:00:00')
+      (kind='domestic' and dep_interval > '12:00:00');
 
 CREATE VIEW total AS
 SELECT SUM(booking.price)
