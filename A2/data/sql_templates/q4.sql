@@ -26,7 +26,7 @@ FROM departure, flight
 WHERE departure.flight_id = flight.id;
 
 CREATE VIEW departed AS
-SELECT departedplanes.id as id, airline as air, tail_number as tail, count(*) as booked
+SELECT departedplanes.id as id, airline as air, plane as tail, count(*) as booked
 FROM departedplanes
 INNER JOIN booking
 ON departedplanes.flight_id = booking.flight_id
