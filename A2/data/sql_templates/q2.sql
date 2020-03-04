@@ -65,7 +65,7 @@ GROUP BY airline, name, year, seat_class;
 -- fuck you
 -- FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
 
--- INSERT INTO q2
+INSERT INTO q2
 
 -- Gets all the delayed flights
 
