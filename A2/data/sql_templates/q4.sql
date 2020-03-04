@@ -39,27 +39,34 @@ FROM departed RIGHT JOIN Plane ON Plane.tail_number=departed.tail;
 CREATE VIEW very_low AS
 Select air, tail, count(*)
 FROM p
-WHERE p.percentage < 0.2;
+WHERE p.percentage < 0.2
+GROUP BY air, tail;
 
 CREATE VIEW low AS
 Select air, tail, count(*)
 FROM p
-WHERE p.percentage >= 0.2 and p.percentage < 0.4;
+WHERE p.percentage >= 0.2 and p.percentage < 0.4
+GROUP BY air, tail;
 
 CREATE VIEW  fair AS
 Select air, tail, count(*)
 FROM p
 WHERE p.percentage >= 0.4 and p.percentage < 0.6
+GROUP BY air, tail;
+
 
 CREATE VIEW normal AS
 Select air, tail, count(*)
 FROM p
-WHERE p.percentage >= 0.6 and p.percentage < 0.8;
+WHERE p.percentage >= 0.6 and p.percentage < 0.8
+GROUP BY air, tail;
+
 
 CREATE VIEW high AS
 Select air, tail, count(*)
 FROM p
-WHERE p.percentage >= 0.8;
+WHERE p.percentage >= 0.8
+GROUP BY air, tail;
 
 CREATE VIEW contingency AS
 select *
