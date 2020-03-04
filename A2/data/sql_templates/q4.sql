@@ -30,7 +30,7 @@ SELECT departedplanes.id as id, airline as air, plane as tail, count(*) as booke
 FROM departedplanes
 INNER JOIN booking
 ON departedplanes.flight_id = booking.flight_id
-GROUP BY departedplanes.id,airline,tail_number;
+GROUP BY departedplanes.id,airline,plane;
 
 CREATE VIEW p AS
 SELECT id, air, tail, booked/(capacity_economy+Capacity_business+Capacity_first) as percentage
