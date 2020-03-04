@@ -37,38 +37,38 @@ SELECT id, air, tail, booked/(capacity_economy+Capacity_business+Capacity_first)
 FROM departed RIGHT JOIN Plane ON Plane.tail_number=departed.tail;
 
 CREATE VIEW very_low AS
-Select air, tail, count(*) as very_low
+Select air, tail, count(*) as a
 WHERE p.percentage < 0.2
 GROUP BY air, tail;
 
 CREATE VIEW low AS
-Select air, tail, count(*) as low
+Select air, tail, count(*) as b
 FROM p
 WHERE p.percentage >= 0.2 and p.percentage < 0.4
 GROUP BY air, tail;
 
 CREATE VIEW  fair AS
-Select air, tail, count(*) as fair
+Select air, tail, count(*) as c
 FROM p
 WHERE p.percentage >= 0.4 and p.percentage < 0.6
 GROUP BY air, tail;
 
 
 CREATE VIEW normal AS
-Select air, tail, count(*) as normal
+Select air, tail, count(*) as d
 FROM p
 WHERE p.percentage >= 0.6 and p.percentage < 0.8
 GROUP BY air, tail;
 
 
 CREATE VIEW high AS
-Select air, tail, count(*) as high
+Select air, tail, count(*) as e
 FROM p
 WHERE p.percentage >= 0.8
 GROUP BY air, tail;
 
 CREATE VIEW contingency AS
-select air, tail, verylow.very_low, low.low, fair.fair, normal.normal, high.high
+select air, tail, a, b, c, d, e
 from very_low, low, fair, normal, high
 -- JOIN low JOIN fair JOIN normal JOIN high
 WHERE very_low.air=low.air and low.air=fair.air and fair.air=normal.air and normal.air=high.air and
