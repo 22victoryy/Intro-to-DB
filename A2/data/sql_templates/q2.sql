@@ -56,7 +56,7 @@ WHERE (kind='international' and dep_interval > '10:00:00') or
 
 -- CREATE VIEW totalprice AS
 INSERT INTO q2
-SELECT airline, name, year, seat_class, SUM(booking.price)
+SELECT airline, name, year, seat_class, SUM(multiple * booking.price)
 FROM (SELECT * FROM thirtyfivepercenters
       UNION
       SELECT * FROM fiftypercenters) money, booking, airline
