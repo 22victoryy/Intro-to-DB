@@ -62,12 +62,17 @@ FROM (SELECT * FROM thirtyfivepercenters
 WHERE money.id = booking.flight_id and money.airline = airline.code
 GROUP BY airline, name, year, seat_class;
 
+
 -- fuck you
 -- FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
 
-INSERT INTO q2
 
 -- Gets all the delayed flights
 
 -- select id, price
 -- from delayedflights JOIN booked
+
+
+
+
+INSERT INTO q2
