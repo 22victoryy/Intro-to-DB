@@ -100,6 +100,7 @@ CREATE VIEW contingency AS
 select air, tail,a,b,c,d,e
 from very_low NATURAL JOIN low natural join fair natural join normal natural join high;
 
+-- q4 done
 
 
 
