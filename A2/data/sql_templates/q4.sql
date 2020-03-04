@@ -71,7 +71,8 @@ GROUP BY air, tail;
 CREATE VIEW contingency AS
 select *
 from very_low JOIN low JOIN fair JOIN normal JOIN high
-ON very_low.air=low.air and low.air=fair.air and fair.air=normal.air and normal.air=high.air;
+ON very_low.air=low.air and low.air=fair.air and fair.air=normal.air and normal.air=high.air
+and very_low.tail=low.tail and low.tail=fair.tail and fair.tail=normal.tail and normal.tail=high.tail;
 
 
 
