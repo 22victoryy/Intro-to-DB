@@ -16,15 +16,8 @@ CREATE TABLE q2 (
 -- (But give them better names!) The IF EXISTS avoids generating an error 
 -- the first time this file is imported.
 DROP VIEW IF EXISTS delayedflights CASCADE;
+DROP VIEW IF EXISTS delayedflightsType CASCADE;
 
--- date_part('year', booking.datetime)
-
--- select *,
--- CASE
--- WHEN condition THEN value
--- ELSE
--- END AS attribute_name
--- FROM table;
 -- Define views for your intermediate steps here:
 
 
@@ -39,14 +32,21 @@ where flight.id = arrival.flight_id and
       flight.s_dep < departure.datetime;
 
 CREATE VIEW delayedflightsType AS
-select id, airline, year,
+select id, airline, year, dep_interval
 CASE 
     WHEN a1.country = a2.country THEN 'domestic'
     WHEN a1.country <> a2.country THEN 'international'
     ELSE NULL
 END AS kind
 from delayedflights, airport a1, airport a2
-where outbound=a1.code and inbound=a2.code;
+where outbound=a1.code and inbound=a2.code and
+      dep_interval*0.5 < arv_interval;
+
+CREATE VIEW 35percenters AS
+SELECT id, airline, year
+FROM delayedflightsType
+WHERE (kind='international' and dep_interval >= '7:00:00' and dep_interval < '12:00:00') or
+      (kind='domestic' and dep_interval >= '4:00:00' and dep_interval < '10:00:00');
 
 INSERT INTO q2
 
