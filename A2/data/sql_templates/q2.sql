@@ -59,7 +59,7 @@ SELECT airline, name, year, seat_class, SUM(booking.price)
 FROM (SELECT * FROM thirtyfivepercenters
       UNION
       SELECT * FROM fiftypercenters) money, booking, airline
-WHERE money.id = booking.flight_id and booking.name =  airline.name
+WHERE money.id = booking.flight_id and money.airline =  airline.name
 GROUP BY airline, name, year, seat_class;
 
 -- fuck you
