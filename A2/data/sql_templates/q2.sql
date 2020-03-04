@@ -54,7 +54,7 @@ FROM delayedflightsType
 WHERE (kind='international' and dep_interval > '10:00:00') or
       (kind='domestic' and dep_interval > '12:00:00');
 
-CREATE VIEW total AS
+CREATE VIEW totalprice AS
 SELECT SUM(booking.price)
 FROM (SELECT * FROM thirtyfivepercenters
       UNION
@@ -74,4 +74,3 @@ INSERT INTO q2
 
 
 --  First find late flights
--- 
