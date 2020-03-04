@@ -51,52 +51,54 @@ FROM departed RIGHT JOIN Plane ON Plane.tail_number=departed.tail;
 
 CREATE VIEW very_low AS
 Select air, tail,
-CASE
+sum(CASE
     WHEN p.percentage < 0.2 THEN 1
     ELSE 0
-END as a
-FROM p;
+END) as a
+FROM p
+GROUP BY air, tail;
 
 CREATE VIEW low AS
 Select air, tail,
-CASE
+sum(CASE
     WHEN p.percentage >= 0.2 and p.percentage < 0.4 THEN 1
     ELSE 0
-END as b
-FROM p;
+END) as b
+FROM p
+GROUP BY air, tail;
 
 CREATE VIEW  fair AS
 Select air, tail,
-CASE
+sum(CASE
     WHEN p.percentage >= 0.4 and p.percentage < 0.6 THEN 1
     ELSE 0
-END as c 
-FROM p;
+END) as c 
+FROM p
+GROUP BY air, tail;
 
 
 CREATE VIEW normal AS
 Select air, tail,
-CASE
+sum(CASE
     WHEN p.percentage >= 0.6 and p.percentage < 0.8 THEN 1
     ELSE 0
-END as d
-FROM p;
+END) as d
+FROM p
+GROUP BY air, tail;
 
 
 CREATE VIEW high AS
 Select air, tail,
-CASE
+sum(CASE
     WHEN p.percentage >= 0.8 THEN 1
     ELSE 0
-END as e
-FROM p;
+END) as e
+FROM p
+GROUP BY air, tail;
 
 CREATE VIEW contingency AS
-select very_low.air, very_low.tail, sum(a), sum(b), sum(c), sum(d), sum(e)
-from very_low, low, fair, normal, high
-WHERE very_low.air=low.air and low.air=fair.air and fair.air=normal.air and normal.air=high.air and
-very_low.tail=low.tail and low.tail=fair.tail and fair.tail=normal.tail and normal.tail=high.tail
-GROUP BY very_low.air, very_low.tail;
+select air, tail,a,b,c,d,e
+from very_low NATURAL JOIN low natural join fair natural join normal natural join high;
 
 
 
