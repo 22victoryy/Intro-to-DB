@@ -58,36 +58,45 @@ END as a
 FROM p;
 
 CREATE VIEW low AS
-Select air, tail, count(*) as b
-FROM p
-WHERE p.percentage >= 0.2 and p.percentage < 0.4
-GROUP BY air, tail;
+Select air, tail,
+CASE
+    WHEN p.percentage >= 0.2 and p.percentage < 0.4 THEN 1
+    ELSE 0
+END as b
+FROM p;
 
 CREATE VIEW  fair AS
-Select air, tail, count(*) as c
-FROM p
-WHERE p.percentage >= 0.4 and p.percentage < 0.6
-GROUP BY air, tail;
+Select air, tail,
+CASE
+    WHEN p.percentage >= 0.4 and p.percentage < 0.6 THEN 1
+    ELSE 0
+END as c 
+FROM p;
 
 
 CREATE VIEW normal AS
-Select air, tail, count(*) as d
-FROM p
-WHERE p.percentage >= 0.6 and p.percentage < 0.8
-GROUP BY air, tail;
+Select air, tail,
+CASE
+    WHEN p.percentage >= 0.6 and p.percentage < 0.8 THEN 1
+    ELSE 0
+END as d
+FROM p;
 
 
 CREATE VIEW high AS
-Select air, tail, count(*) as e
-FROM p
-WHERE p.percentage >= 0.8
-GROUP BY air, tail;
+Select air, tail,
+CASE
+    WHEN p.percentage >= 0.8 THEN 1
+    ELSE 0
+END as e
+FROM p;
 
 CREATE VIEW contingency AS
-select very_low.air, very_low.tail, a, b, c, d, e
+select very_low.air, very_low.tail, sum(a), sum(b), sum(c), sum(d), sum(e)
 from very_low, low, fair, normal, high
 WHERE very_low.air=low.air and low.air=fair.air and fair.air=normal.air and normal.air=high.air and
-very_low.tail=low.tail and low.tail=fair.tail and fair.tail=normal.tail and normal.tail=high.tail;
+very_low.tail=low.tail and low.tail=fair.tail and fair.tail=normal.tail and normal.tail=high.tail
+GROUP BY very_low.air, very_low.tail;
 
 
 
