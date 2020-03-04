@@ -42,11 +42,22 @@ from delayedflights, airport a1, airport a2
 where outbound=a1.code and inbound=a2.code and
       dep_interval*0.5 < arv_interval;
 
-CREATE VIEW 35percenters AS
-SELECT id, airline, year
+CREATE VIEW thirtyfivepercenters AS
+SELECT id, airline, year, 0.35 as multiple
 FROM delayedflightsType
 WHERE (kind='international' and dep_interval >= '7:00:00' and dep_interval < '12:00:00') or
       (kind='domestic' and dep_interval >= '4:00:00' and dep_interval < '10:00:00');
+
+
+CREATE VIEW fiftypercenters AS
+SELECT id, airline, year, 0.5 as multiple
+FROM delayedflightsType
+WHERE (kind='international' and dep_interval > '10:00:00') or
+      (kind='domestic' and dep_interval > '12:00:00')
+
+CREATE VIEW total AS
+SELECT SUM(booking.price)
+FROM 35percenters UNION 50percenters INNER JOIN booking
 
 INSERT INTO q2
 
