@@ -69,12 +69,10 @@ WHERE p.percentage >= 0.8
 GROUP BY air, tail;
 
 CREATE VIEW contingency AS
-select *
+select very_low.air, very_low.tail, a, b, c, d, e
 from very_low, low, fair, normal, high
 WHERE very_low.air=low.air and low.air=fair.air and fair.air=normal.air and normal.air=high.air and
 very_low.tail=low.tail and low.tail=fair.tail and fair.tail=normal.tail and normal.tail=high.tail;
-
-
 
 
 
