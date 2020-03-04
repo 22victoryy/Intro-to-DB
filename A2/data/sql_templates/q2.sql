@@ -32,8 +32,8 @@ where flight.id = arrival.flight_id and
       flight.s_dep < departure.datetime;
 
 CREATE VIEW delayedflightsType AS
-select id, airline, year, dep_interval
-CASE 
+select id, airline, year, dep_interval,
+CASE
     WHEN a1.country = a2.country THEN 'domestic'
     WHEN a1.country <> a2.country THEN 'international'
     ELSE NULL
