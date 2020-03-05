@@ -48,7 +48,6 @@ public class Assignment2 {
       }
       catch (SQLException e)
       {
-        System.err.println("SQL Exception." + e.getMessage());
         return false;
       }
       return true;
@@ -66,7 +65,6 @@ public class Assignment2 {
         connection.close();
         }
         catch (SQLException e) {
-          System.err.println("SQL Exception." + e.getMessage());
           return false;
         }
       }
@@ -102,7 +100,6 @@ public class Assignment2 {
         rs = ps.executeQuery();
         rs.next();
         if (rs.getInt("count") == 0){
-	        System.err.println("Passenger does not exist");
           return false;
         }
         // check flight exists
@@ -132,7 +129,6 @@ public class Assignment2 {
         rs.next();
 	      capacity = rs.getInt("capacity_"+seatClass);
 	      if ((seatClass.equals("economy") && (capacity - countBooked) <= -10) || (!seatClass.equals("economy") && (capacity - countBooked) <= 0)){
-	        System.err.println("Not enough space");
 	        return false;
         }
 
@@ -166,13 +162,10 @@ public class Assignment2 {
         fin.setInt(5, rs.getInt("price"));
         
         if (fin.executeUpdate() != 1){
-          System.err.println("Failed to add booking to relation Booking");
           return false;
         }
 
       } catch (SQLException se){
-        System.err.println("SQL Exception." + se.getMessage());
-	se.printStackTrace();
         return false;
       }
       return true;
@@ -200,7 +193,6 @@ public class Assignment2 {
 
         // check flight exists
         if (!checkFlightExistsAndNotDeparted(flightID)){
-          System.out.println("The flight either does not exist or alreadt has been departed");
           return -1;
         }
         else {
@@ -258,13 +250,11 @@ public class Assignment2 {
 
             int id = rs.getInt("id");
             if (totalBooked == totalCapacity) {
-              System.out.println("Kicking "+id+" out of the plane.");
               String deleteBooking = "DELETE FROM Booking " + 
                                      "WHERE id="+ id;
               ps = connection.prepareStatement(deleteBooking);
               ps.executeUpdate();
             } else if (capacityBusiness == BusinessBooked) {
-              System.out.println("Business class is full.");
 
               // upgrade to first class, increment counter
               int[] rc = getSeatLocation(firstBooked + 1);
@@ -296,7 +286,6 @@ public class Assignment2 {
         }
     }
     catch (SQLException e) {
-      System.err.println("SQL Exception." + e.getMessage());
       return -1;
     }
    }
@@ -328,7 +317,6 @@ public class Assignment2 {
       rs = ps.executeQuery();
       rs.next();
       if (rs.getInt("count") == 0){
-        System.err.println("Flight does not exist");
         return false;
       }
       String flightDepartedQuery = "SELECT count(*) AS count " +
@@ -337,7 +325,6 @@ public class Assignment2 {
       rs = ps.executeQuery();
       rs.next();
       if (rs.getInt("count") > 0){
-        System.err.println("Flight already departed :(");
         return false;
       }
       return true;
