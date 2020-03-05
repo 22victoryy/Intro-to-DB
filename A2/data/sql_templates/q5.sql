@@ -23,10 +23,23 @@ SELECT day::date as day FROM q5_parameters;
 CREATE VIEW n AS
 SELECT n FROM q5_parameters;
 -- can get the given number of flights using: (SELECT n from n)
+WITH RECURSIVE bitch AS
+(SELECT 'YYZ' as inbound, 0 as num_flights, day FROM q5_parameters)
+UNION ALL
+(SELECT Flight.inbound as inbound, num_flights + 1, Flight.s_arv as s_arv
+ FROM Flight, bitch
+ WHERE Flight.outbound = bitch.inbound AND
+       Flight.s_dep - bitch.s_arv >= '0' AND
+	   Flight.s_dep - bitch.s_arv < '24:00:00'
+	   AND num_flights = max(num_flights)
+	   AND num_flights + 1 <= (SELECT n FROM q5_parameters));
 
 -- HINT: You can answer the question by writing one recursive query below, without any more views.
 -- Your query that answers the question goes below the "insert into" line:
 INSERT INTO q5
+SELECT inbound, num_flights
+FROM bitch
+WHERE num_flights > 0;
 
 
 
