@@ -106,8 +106,6 @@ from very_low NATURAL JOIN low natural join fair natural join normal natural joi
 
 
 
--- fuck 
-
 
 -- Your query that answers the question goes below the "insert into" line:
 INSERT INTO q4 
