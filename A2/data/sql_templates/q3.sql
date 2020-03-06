@@ -25,6 +25,8 @@ DROP VIEW IF EXISTS TwoConnections CASCADE;
 DROP VIEW IF EXISTS CountDirect CASCADE;
 DROP VIEW IF EXISTS CountOneConnection CASCADE;
 DROP VIEW IF EXISTS CountTwoConnection CASCADE;
+DROP VIEW IF EXISTS AllCounts CASCADE;
+DROP VIEW IF EXISTS earliest CASCADE;
 
 
 -- Define views for your intermediate steps here:

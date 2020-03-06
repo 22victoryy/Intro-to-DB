@@ -17,6 +17,8 @@ CREATE TABLE q2 (
 -- the first time this file is imported.
 DROP VIEW IF EXISTS delayedflights CASCADE;
 DROP VIEW IF EXISTS delayedflightsType CASCADE;
+DROP VIEW IF EXISTS thirtyfivepercenters CASCADE;
+DROP VIEW IF EXISTS fiftypercenters CASCADE;
 
 -- Define views for your intermediate steps here:
 
@@ -64,7 +66,6 @@ WHERE money.id = booking.flight_id and money.airline = airline.code
 GROUP BY airline, name, year, seat_class;
 
 
--- fuck you
 -- FROM thirtyfivepercenters UNION fiftypercenters INNER JOIN booking;
 
 

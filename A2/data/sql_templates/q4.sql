@@ -5,18 +5,6 @@ SET SEARCH_PATH TO air_travel, public;
 DROP TABLE IF EXISTS q4 CASCADE;
 
 
-DROP VIEW IF EXISTS departedplanes CASCADE;
-DROP VIEW IF EXISTS departed CASCADE;
-DROP VIEW IF EXISTS p CASCADE;
-DROP VIEW IF EXISTS very_low CASCADE;
-DROP VIEW IF EXISTS low CASCADE;
-DROP VIEW IF EXISTS fair CASCADE;
-DROP VIEW IF EXISTS normal CASCADE;
-DROP VIEW IF EXISTS high CASCADE;
-DROP VIEW IF EXISTS contingency CASCADE;
-
-
-
 CREATE TABLE q4 (
 	airline CHAR(2),
 	tail_number CHAR(5),
@@ -30,7 +18,16 @@ CREATE TABLE q4 (
 -- Do this for each of the views that define your intermediate steps.
 -- (But give them better names!) The IF EXISTS avoids generating an error
 -- the first time this file is imported.
-DROP VIEW IF EXISTS intermediate_step CASCADE;
+DROP VIEW IF EXISTS departedplanes CASCADE;
+DROP VIEW IF EXISTS departed CASCADE;
+DROP VIEW IF EXISTS p CASCADE;
+DROP VIEW IF EXISTS very_low CASCADE;
+DROP VIEW IF EXISTS low CASCADE;
+DROP VIEW IF EXISTS fair CASCADE;
+DROP VIEW IF EXISTS normal CASCADE;
+DROP VIEW IF EXISTS high CASCADE;
+DROP VIEW IF EXISTS contingency CASCADE;
+
 
 -- Define views for your intermediate steps here:
 CREATE VIEW departedplanes AS
