@@ -1,0 +1,199 @@
+\documentclass[boldsans]{article}
+\usepackage[utf8]{inputenc}
+
+\title{CSC343 - Assignment 3}
+\author{alsaidia, chochan2 }
+\date{March 30th, 2020}
+\usepackage{geometry}
+\geometry{left=2cm, right=2cm, top=1cm}
+\usepackage{ccfonts,fullpage,graphics,rotating,amsmath,amssymb}
+\begin{document}
+\newcommand{\ntab}[1]{\textbf{#1}}
+\newcommand{\fd}[2]{#1\rightarrow #2}
+\maketitle
+
+\begin{enumerate}
+    \item 
+    \begin{enumerate}
+        \item 
+        \textbf{Step 1}: Split RHS of FDs.
+        
+        $\{\fd{IJ}{K}, \fd{J}{L}, \fd{J}{I}, \fd{JN}{K}, \fd{JN}{M}, \fd{K}{I}, \fd{K}{J}, \fd{K}{L}, \fd{KLN}{M}, \fd{M}{I}, \fd{M}{J}, \fd{M}{J}, \fd{M}{L}\}$
+        
+        \ 
+        
+        \textbf{Step 2}: LHS reduction
+        
+        Consider splitting $IJ$:
+        
+        \ \ \ \ $J^+=LI$
+        
+        \ \ \ \ $I^+=I$
+        
+        \ \ \ \ Cannot replace anything
+        
+        Consider splitting $JN$:
+    
+        \ \ \ \ $J^+=IJLK$
+        
+        \ \ \ \ $N^+=N$
+        
+        \ \ \ \ Replace $\fd{JN}{K}$ with $\fd{J}{K}$
+        
+        Consider splitting $KLN$
+
+        \ \ \ \ Notice that we need $N$ on the LHS to get $M$ on the RHS, so only consider closures with $N$
+        
+        \ \ \ \ $N^+=N$
+        
+        \ \ \ \ $LN^+=LN$
+        
+        \ \ \ \ $KN^+=IJKLM$
+        
+        \ \ \ \ Replace $\fd{KLN}{M}$ with $\fd{KN}{M}$
+        
+        New set of FDs:
+        
+        $\{\fd{IJ}{K}, \fd{J}{L}, \fd{J}{I}, \fd{J}{K}, \fd{JN}{M}, \fd{K}{I}, \fd{K}{J}, \fd{K}{L}, \fd{KN}{M}, \fd{M}{I}, \fd{M}{J}, \fd{M}{J}, \fd{M}{L}\}$
+        
+        \ 
+        
+        \textbf{Step 3}: Remove redundant FDs
+        
+        \begin{itemize}
+            \item $\fd{IJ}{K}$ is removed.
+            \item $\fd{J}{L}$ is removed.
+            \item $\fd{J}{I}$ is removed.
+            \item $\fd{J}{K}$ is not removed.
+            \item $\fd{JN}{M}$ is removed.
+            \item $\fd{K}{I}$ is not removed.
+            \item $\fd{K}{J}$ is not removed.
+            \item $\fd{K}{L}$ is not removed.
+            \item $\fd{KN}{M}$ is not removed.
+            \item $\fd{M}{I}$ is removed.
+            \item $\fd{M}{J}$ is removed.
+            \item $\fd{M}{J}$ is removed.
+            \item $\fd{M}{L}$ is removed.
+            
+        \end{itemize}
+        
+        \textbf{Minimal Basis}: 
+        $\{ J\rightarrow K, K\rightarrow IJL, KN\rightarrow M, M\rightarrow J\}$
+        
+        
+        
+        \item 
+        
+        We have found the minimal basis in step a). Now, we must find the set of attributes not on the RHS of FD. In this case, its \{N, O, P\}. We find its closure, which is NOP. We see from here that every key must contain NOP.
+        
+        \
+        
+        Now we look at the attributes that aren't on the LHS of all the FD but on some RHS of the FD. These are \{i, j\}, which cannot be any keys for our schema.
+        
+        \ 
+        
+        Now we add attributes to check if its a superkey. If it is a superkey, we will check if its subset is also a super key. We will add more attributes if this is not satisfied.
+        
+        \
+        
+        $\{N, O, P\} \cup  \{J\}$ is a superkey and a candidate key.
+        
+        $\{N, O, P\} \cup  \{K\}$ is a superkey and a candidate key.
+        
+        $\{N, O, P\} \cup  \{M\}$ is a superkey and a candidate key.
+        
+        \ 
+        
+        JNOP, KNOP, MNOP are the minimal keys for $R$, any other attributes can be added to them to create new super keys.
+        
+        \item 
+        \textbf{Step 1}: Minimal Basis
+        
+        $\{ J\rightarrow K, K\rightarrow IJL, KN\rightarrow M, M\rightarrow J\}$
+        
+        \textbf{Step 2}: Relation creation
+        
+        We get relations $\mathbf{JK, IJKL, KMN, JM}$ from the minimal basis.
+        
+        Relation $\mathbf{JK}$ is a subset of relation $\mathbf{IJKL}$ so it is removed.
+        
+        \textbf{Step 3}: Super Key Relation
+        
+        Notice that none of the relationships contain a super key.
+        
+        So we add the relation 
+        $\mathbf{KMNOP}$.
+        
+        Now we can remove $\mathbf{KMN}$ as it is a subset of $\mathbf{KMNOP}$.
+        
+        So we get the following relations for the decomposition of $R$
+        
+        $\mathbf{IJKL, KMNOP, JM}$
+        
+        \item The schema allows redundancy. The 3NF algorithm does not decompose too far, and preserves original functional dependencies, which creates redundancy. This will therefore create anomalies.
+    \end{enumerate}
+    
+    \item 
+    \begin{enumerate}
+        \item 
+        We have
+        \
+        $\fd{C}{EH}$, 
+        $\fd{DEI}{F}$,
+        $\fd{F}{D}$,
+        $\fd{EH}{CJ}$,
+        $\fd{J}{FGI}$.
+        
+        \emph{Definition}: We say a relation R is in BCNF if for every nontrivial FD $X\rightarrow Y$ that holds in R, X is a superkey.
+        
+        \
+        
+        \begin{itemize}
+            \item For $\fd{C}{EH}$, $C^+=CDEFGHIJ$ so the LHS of this FD is a superkey. Does not violate BCNF.
+            \item For $\fd{DEI}{F}$, $DEI^+=DEFI$ so the LHS of this FD is \textbf{NOT} a superkey. Violates BCNF.
+            \item For $\fd{F}{D}$, $F^+=DF$, so the LHS of this FD is \textbf{NOT} a superkey. Violates BCNF. 
+            \item For $\fd{EH}{CJ}$, $EH^+=CDEFGHIJ$ so the LHS of this FD is a superkey. Does not violate BCNF.
+            \item  For $\fd{J}{FGI}$, $J^+=DFGIJ$, so the LHS of this FD is a \textbf{NOT} superkey. Violates BCNF. 
+        \end{itemize}
+        \item
+        Consider $DEI\rightarrow F$
+        
+        $DEI^+=DEFI$ so the new relations are 
+        DEFI and CDEGHIJ
+        
+        \ \ \ \ Consider relation DEFI
+        
+        \ \ \ \ The projected FDs are $\{DEI\rightarrow F, \fd{F}{D}\}$
+        
+        \ \ \ \ $\fd{F}{D}$ violates BCNF so DEFI is decomposed into $DF$ and $EFI$
+        
+        \ \ \ \ \ \ \ \ Consider relation DF
+        
+        \ \ \ \ \ \ \ \ The projected FDs are $\{\fd{F}{D}\}$ so it is in BCNF.
+        
+        \ \ \ \ \ \ \ \ Consider relation EFI
+        
+        \ \ \ \ \ \ \ \ There are no projected FDs so it is in BCNF.
+        
+        \ \ \ \ Consider relation CDEGHIJ
+        
+        \ \ \ \ The projected FDs are $\{\fd{C}{DEGHIJ}, \fd{EH}{CDGIJ}, \fd{J}{DGI}\}$
+        
+        \ \ \ \ $\fd{J}{DGI}$ violates BCNF so CDEGHIJ is split into DGIJ and CEHJ
+        
+        \ \ \ \ \ \ \ \ Consider relation DGIJ
+        
+        \ \ \ \ \ \ \ \ The projected FDs are $\{\fd{J}{DGI}\}$ so it is in BCNF
+        
+        \ \ \ \ \ \ \ \ Consider relation CEHJ
+        
+        \ \ \ \ \ \ \ \ The projected FDs are $\{\fd{C}{EHJ}, \fd{EH}{CJ}\}$ so it is in BCNF
+        
+        So the final set of relations are $\{CEHJ, DF, DGIJ, EFI\}$
+        
+        
+        The projected FDs are $\{\fd{C}{EHJ},  \fd{EH}{CJ}, \fd{F}{D}, \fd{J}{DGI}\}$ 
+    \end{enumerate}
+\end{enumerate}
+
+\end{document}
