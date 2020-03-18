@@ -101,15 +101,22 @@ CREATE TABLE Booking (
  -- dive type of the booking
  dive_type dive_type NOT NULL,
  -- timestamp for the day of the booking,
- date_time timestamp NOT NULL CHECK (date_time > current_timestamp),
+ date timestamp NOT NULL CHECK (date > current_timestamp),
  -- time in which the dive takes place,
  dive_time dive_time NOT NULL,
  FOREIGN KEY (monitor_id, site_id, dive_type, dive_time) REFERENCES MonitorFee
- -- cross table triggers
+ 
  -- nitrogen level
- CHECK (mon)
  -- same lead same date time different booking
  );
+ 
+-- CREATE TRIGGER monitor_nitrogen
+	-- BEFORE UPDATE OR INSERT
+	-- ON Booking
+	-- FOR EACH ROW
+	-- WHEN (NEW.monitor_id = OLD.monitor_id AND
+            -- NEW.date - OLD.date < ‘48:00:00’)
+	--EXECUTE PROCEDURE sth();
  
 CREATE TABLE MonitorRating (
  -- booking id to which the rating corresponds to
