@@ -104,7 +104,7 @@ CREATE TABLE Booking (
  date timestamp NOT NULL CHECK (date > current_timestamp),
  -- time in which the dive takes place,
  dive_time dive_time NOT NULL,
- FOREIGN KEY (monitor_id, site_id, dive_type, dive_time) REFERENCES MonitorFee
+ FOREIGN KEY (monitor_id, site_id, dive_time, dive_type) REFERENCES MonitorFee
  
  -- nitrogen level
  -- same lead same date time different booking
