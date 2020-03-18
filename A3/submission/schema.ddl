@@ -145,6 +145,7 @@ CREATE TABLE SiteRating (
  booking_id INT,
  diver_id INT,
  rating INT CHECK (0 <= rating and rating <= 5) NOT NULL,
- PRIMARY KEY (booking_id, diver_id) REFERENCES SubBooking 
+ PRIMARY KEY (booking_id, diver_id),
+ FOREIGN KEY (booking_id, diver_id) REFERENCES SubBooking
 );
  
