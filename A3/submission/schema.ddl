@@ -62,9 +62,9 @@ CREATE TABLE Monitor(
 );
  
 -- dive type
-CREATE TYPE dive_type AS ENUM (‘open water’, ‘cave’, ‘deeper than 30’);
+CREATE TYPE dive_type AS ENUM ('open water', 'cave', 'deeper than 30');
 -- dive time
-CREATE TYPE dive_time AS ENUM (‘morning’, ‘afternoon’, ‘night’);
+CREATE TYPE dive_time AS ENUM ('morning', 'afternoon', 'night');
  
 CREATE TABLE MonitorCapacity (
  -- monitor id
@@ -97,7 +97,7 @@ CREATE TABLE Booking (
  -- monitor for the booking
  monitor_id INT REFERENCES Monitor,
  -- dive site for the booking
- site_id INT REFRENCES DiveSite,
+ site_id INT REFERENCES DiveSite,
  -- dive type of the booking
  dive_type dive_type NOT NULL,
  -- timestamp for the day of the booking,
@@ -145,6 +145,6 @@ CREATE TABLE SiteRating (
  booking_id INT,
  diver_id INT,
  rating INT CHECK (0 <= rating and rating <= 5) NOT NULL,
- PRIMARY KEY (booking_id, diver_id) REFRENCES SubBooking 
+ PRIMARY KEY (booking_id, diver_id) REFERENCES SubBooking 
 );
  
