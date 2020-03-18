@@ -42,7 +42,7 @@ CREATE TABLE DiveSite (
 );
  
 CREATE TABLE DiveSiteExtrasPrice(
- id INT PRIMARY KEY REFERENCES DiveSite
+ id INT PRIMARY KEY REFERENCES DiveSite,
  -- fee for mask per diver
  mask NUMERIC CHECK (mask >= 0),
  -- fee for regulator per diver
@@ -55,9 +55,9 @@ CREATE TABLE DiveSiteExtrasPrice(
  
 CREATE TABLE Monitor(
  id INT PRIMARY KEY,
- -- The first name of the diver.
+ -- The first name of the diver
  firstname VARCHAR(50) NOT NULL,
- -- The surname of the passenger.
+ -- The surname of the passenger
  surname VARCHAR(50) NOT NULL
 );
  
