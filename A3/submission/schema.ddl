@@ -1,9 +1,9 @@
 DROP SCHEMA IF EXISTS wetworldschema CASCADE;
 CREATE SCHEMA wetworldschema;
 SET search_path TO wetworldschema;
- 
+
 CREATE TYPE certification AS ENUM ('NAUI', 'CMAS', 'PADI');
- 
+
 -- A diver who dives.
 CREATE TABLE Diver (
  id INT PRIMARY KEY,
