@@ -1,4 +1,4 @@
-DROP SCHEMA IF EXISTS wetworldschema CASECADE;
+DROP SCHEMA IF EXISTS wetworldschema CASCADE;
 CREATE SCHEMA wetworldschema;
 SET search_path TO wetworldschema;
  
