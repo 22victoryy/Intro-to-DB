@@ -1,6 +1,6 @@
-DROP SCHEMA IF EXISTS wetworldschema CASECADE
+DROP SCHEMA IF EXISTS wetworldschema CASECADE;
 CREATE SCHEMA wetworldschema;
-SET search_path TO wetworldschema
+SET search_path TO wetworldschema;
  
 CREATE TYPE certification AS ENUM ('NAUI', 'CMAS', 'PADI');
  
