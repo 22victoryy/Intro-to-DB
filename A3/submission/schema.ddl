@@ -149,8 +149,8 @@ CREATE TABLE MonitorRating (
 -- Ratings for sites by divers
 CREATE TABLE SiteRating (
  -- booking that the diver is rating
- booking_id INT REFERENCES Booking,
- diver_id INT REFERENCES Diver,
+ booking_id INT,
+ diver_id INT,
  rating INT CHECK (0 <= rating and rating <= 5) NOT NULL,
  PRIMARY KEY (booking_id, diver_id),
  FOREIGN KEY (booking_id, diver_id) REFERENCES SubBooking
