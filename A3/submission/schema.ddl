@@ -1,9 +1,9 @@
 DROP SCHEMA IF EXISTS wetworldschema CASCADE;
 CREATE SCHEMA wetworldschema;
 SET search_path TO wetworldschema;
-
+ 
 CREATE TYPE certification AS ENUM ('NAUI', 'CMAS', 'PADI');
-
+ 
 -- A diver who dives.
 CREATE TABLE Diver (
  id INT PRIMARY KEY,
@@ -18,7 +18,8 @@ CREATE TABLE Diver (
  -- certification that the diver has
  certification certification
 );
- 
+
+-- A site for diving
 CREATE TABLE DiveSite (
  id INT PRIMARY KEY,
  -- name of the dive site
@@ -40,8 +41,9 @@ CREATE TABLE DiveSite (
  CHECK (day_capacity >= night_capacity AND day_capacity >= cave_capacity
         AND day_capacity >= deeper30_capacity)
 );
- 
-CREATE TABLE DiveSiteExtrasPrice(
+
+-- Fees charged by dive sites for extra equipment
+CREATE TABLE DiveSiteExtrasFees(
  id INT PRIMARY KEY REFERENCES DiveSite,
  -- fee for mask per diver
  mask NUMERIC CHECK (mask >= 0),
@@ -52,12 +54,13 @@ CREATE TABLE DiveSiteExtrasPrice(
  -- fee for wrist-mounted dive computer per diver
  computer NUMERIC CHECK (computer >= 0)
 );
- 
+
+-- A dive monitor
 CREATE TABLE Monitor(
  id INT PRIMARY KEY,
- -- The first name of the diver
+ -- The first name of the monitor
  firstname VARCHAR(50) NOT NULL,
- -- The surname of the passenger
+ -- The surname of the monitor
  surname VARCHAR(50) NOT NULL
 );
  
@@ -65,7 +68,8 @@ CREATE TABLE Monitor(
 CREATE TYPE dive_type AS ENUM ('open water', 'cave', 'deeper than 30');
 -- dive time
 CREATE TYPE dive_time AS ENUM ('morning', 'afternoon', 'night');
- 
+
+-- The capacity of each monitor for each dive type
 CREATE TABLE MonitorCapacity (
  -- monitor id
  monitor_id INT REFERENCES Monitor,
@@ -75,37 +79,35 @@ CREATE TABLE MonitorCapacity (
  capacity INT NOT NULL CHECK (capacity >= 0),
  PRIMARY KEY (monitor_id, dive_type)
 );
- 
-CREATE TABLE MonitorFee (
+
+-- The fee the monitor charges depending on their affliated site, dive time and
+-- dive type
+CREATE TABLE MonitorAffiliations (
+ id INT PRIMARY KEY,
  -- monitor id
  monitor_id INT REFERENCES Monitor,
  -- the dive type
  dive_type dive_type NOT NULL,
- -- the site id
+ -- the affiliated site id
  site_id INT REFERENCES DiveSite,
  -- the dive time of the diving
  dive_time dive_time NOT NULL,
  -- price for monitor site type combination
  price NUMERIC NOT NULL CHECK (price > 0),
- PRIMARY KEY (monitor_id, site_id, dive_time, dive_type)
+ UNIQUE (monitor_id, site_id, dive_time, dive_type)
 );
- 
+
+-- A dive booking
 CREATE TABLE Booking (
  id INT PRIMARY KEY,
  -- lead diver for the booking
  lead_id INT REFERENCES Diver,
- -- monitor for the booking
- monitor_id INT REFERENCES Monitor,
- -- dive site for the booking
- site_id INT REFERENCES DiveSite,
- -- dive type of the booking
- dive_type dive_type NOT NULL,
- -- timestamp for the day of the booking,
- date timestamp NOT NULL CHECK (date > current_timestamp),
- -- time in which the dive takes place,
- dive_time dive_time NOT NULL,
- FOREIGN KEY (monitor_id, site_id, dive_time, dive_type) REFERENCES MonitorFee
- 
+ -- monitor affiliation for the booking
+ affiliation_id INT REFERENCES MonitorAffiliations,
+ -- price per diver at timeof booking
+ price NUMERIC NOT NULL CHECK(price >= 0),
+ -- date of the dive for the booking,
+ date timestamp NOT NULL CHECK (date > current_timestamp)
  -- nitrogen level
  -- same lead same date time different booking
  );
@@ -117,17 +119,12 @@ CREATE TABLE Booking (
 	-- WHEN (NEW.monitor_id = OLD.monitor_id AND
             -- NEW.date - OLD.date < ‘48:00:00’)
 	--EXECUTE PROCEDURE sth();
- 
-CREATE TABLE MonitorRating (
- -- booking id to which the rating corresponds to
- id INT PRIMARY KEY REFERENCES Booking,
- -- rating 
- rating INT CHECK (0 <= rating and rating <= 5) NOT NULL
-);
- 
+
+-- Divers included in a booking and extras purchased 
 CREATE TABLE SubBooking (
- -- dosomething
+ -- the booking the diver is included in
  booking_id INT REFERENCES Booking,
+ -- the diver associated with the booking
  diver_id INT REFERENCES Diver,
  -- extras
  -- fee paid for mask, zero if not purchased
@@ -140,10 +137,20 @@ CREATE TABLE SubBooking (
  computer NUMERIC CHECK (computer >= 0) DEFAULT 0,
  PRIMARY KEY (booking_id, diver_id)
 );
- 
+
+-- Rating for monitors by lead divers that have booked with them
+CREATE TABLE MonitorRating (
+ -- booking id to which the rating corresponds to
+ id INT PRIMARY KEY REFERENCES Booking,
+ -- rating 
+ rating INT CHECK (0 <= rating and rating <= 5) NOT NULL
+);
+
+-- Ratings for sites by divers
 CREATE TABLE SiteRating (
- booking_id INT,
- diver_id INT,
+ -- booking that the diver is rating
+ booking_id INT REFERENCES Booking,
+ diver_id INT REFERENCES Diver,
  rating INT CHECK (0 <= rating and rating <= 5) NOT NULL,
  PRIMARY KEY (booking_id, diver_id),
  FOREIGN KEY (booking_id, diver_id) REFERENCES SubBooking
