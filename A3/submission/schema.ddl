@@ -122,9 +122,10 @@ DECLARE
     new_time dive_time;
     num_dives integer;
 BEGIN
+    WITH con (vid) AS (VALUES (NEW.affiliation_id))
     SELECT dive_time INTO new_time
-    FROM MonitorAffiliations, (NEW.*) Newt
-    WHERE MonitorAffiliations.id = Newt.affiliation_id;
+    FROM MonitorAffiliations, con
+    WHERE MonitorAffiliations.id = vid;
 
     IF new_time = 'morning' THEN
         NEW.date := date_trunc('day', NEW.date) + '9:30:00';
@@ -134,12 +135,13 @@ BEGIN
         NEW.date := date_trunc('day', NEW.date) + '20:30:00';
     END IF;
     --- Check if the diver has dived more than three times
+    WITH con (mid, vdate) AS (VALUES (NEW.monitor_id, NEW.date))
     CREATE OR REPLACE VIEW MonitorBookings AS
     SELECT count(*) INTO num_dives
-    FROM BookingInfo, (NEW.*) Newt
-    WHERE BookingInfo.monitor_id = NEW.monitor_id AND
-         (BookingInfo.date - Newt.date < '24:00:00' OR
-          Newt.date - BookingInfo.date < '24:00:00');
+    FROM BookingInfo, con
+    WHERE BookingInfo.monitor_id = mid AND
+         (BookingInfo.date - vdate < '24:00:00' OR
+          vdate - BookingInfo.date < '24:00:00');
     IF num_dives = 2 THEN
         RETURN NULL;
     END IF;
@@ -153,14 +155,16 @@ DECLARE
     count integer;
     new_time dive_time;
 BEGIN
+WITH con (vid) AS (VALUES (NEW.affiliation_id))
     SELECT dive_time INTO new_time
-    FROM MonitorAffiliations, (SELECT NEW.*) Newt
-    WHERE MonitorAffiliations.id = Newt.affiliation_id;
+    FROM MonitorAffiliations, con
+    WHERE MonitorAffiliations.id = vid;
 
+    WITH con (lid, vdate) AS (VALUES (NEW.lead_id, NEW.date))
     SELECT count(*) INTO count
-    FROM BookingInfo, (SELECT NEW.*) Newt
-    WHERE BookingInfo.lead_id=Newt.lead_id AND
-          date_trunc('day', BookingInfo.date)=date_trunc('day', Newt.date) AND
+    FROM BookingInfo, con
+    WHERE BookingInfo.lead_id = lid AND
+          date_trunc('day', BookingInfo.date)=date_trunc('day', vdate) AND
           BookingInfo.dive_time=new_time;
     IF count > 0 THEN
         RETURN NULL;
@@ -213,14 +217,16 @@ DECLARE
     sub_booking_count integer;
     site_count integer;
 BEGIN
+    WITH con (bid) AS (VALUES (NEW.booking_id))
     SELECT dive_time, dive_type, BookingInfo.monitor_id, BookingInfo.site_id
 	       INTO new_time, new_type, new_monitor_id, new_site_id
-    FROM BookingInfo, (SELECT NEW.*) Newt
-    WHERE BookingInfo.id = Newt.booking_id;
+    FROM BookingInfo, con
+    WHERE BookingInfo.id = bid;
  
+    WITH con (bid) AS (VALUES (NEW.booking_id))
     SELECT count(*) INTO sub_booking_count
-    FROM SubBooking, (SELECT NEW.*) Newt
-    WHERE SubBooking.booking_id = Newt.booking_id;
+    FROM SubBooking, con
+    WHERE SubBooking.booking_id = bid;
  
     SELECT capacity INTO monitor_capacity
     FROM MonitorCapacity
@@ -276,13 +282,15 @@ DECLARE
     booking_date timestamp;
     certification certification;
 BEGIN
+    WITH con (did) AS (VALUES (NEW.diver_id))
     SELECT dob, certification INTO dob, certification
-    FROM Diver, (SELECT NEW.*) Newt
-    WHERE Diver.id=Newt.diver_id;
+    FROM Diver, con
+    WHERE Diver.id=did;
  
+    WITH con (bid) AS (VALUES (NEW.booking_id))
     SELECT date_trunc('day', BookingInfo.date) INTO booking_date
-    FROM BookingInfo, (SELECT NEW.*) Newt
-    WHERE BookingInfo.id=Newt.booking_id;
+    FROM BookingInfo, con
+    WHERE BookingInfo.id=bid;
  
     IF (booking_date - dob < INTERVAL '16 years')
        OR certification IS NULL THEN 
