@@ -216,6 +216,9 @@ DECLARE
     new_site_id integer;
     sub_booking_count integer;
     site_count integer;
+    site_count_cave;
+    site_count_deeper;
+    site_count_open;
 BEGIN
     WITH con (bid) AS (VALUES (NEW.booking_id))
     SELECT dive_time, dive_type, BookingInfo.monitor_id, BookingInfo.site_id
@@ -242,33 +245,40 @@ BEGIN
     FROM DiveSite 
     WHERE (DiveSite.id = new_site_id); 
  
-    CREATE OR REPLACE VIEW SiteBookings AS
-    SELECT dive_type, count(*) AS count
+    SELECT count(*) INTO site_count_open
     FROM SubBooking JOIN BookingInfo ON
          SubBooking.booking_id = BookingInfo.id
     WHERE BookingInfo.site_id = new_site_id AND dive_time = new_time
-    GROUP BY dive_type;
+        AND dive_type = 'open water';
  
+    SELECT count(*) INTO site_count_cave
+    FROM SubBooking JOIN BookingInfo ON
+         SubBooking.booking_id = BookingInfo.id
+    WHERE BookingInfo.site_id = new_site_id AND dive_time = new_time
+        AND dive_type = 'cave';
+
+    SELECT count(*) INTO site_count_deeper
+    FROM SubBooking JOIN BookingInfo ON
+         SubBooking.booking_id = BookingInfo.id
+    WHERE BookingInfo.site_id = new_site_id AND dive_time = new_time
+        AND dive_type = 'deeper than 30';
+
     IF new_time = 'night' THEN
-        IF (SELECT sum(count) FROM SiteBookings) >= divesite_capacity_night THEN
+        IF (site_count_open + site_count_cave + site_count_deeper >= divesite_capacity_night THEN
             RETURN NULL;
         END IF;
     ELSE
-        IF (SELECT sum(count) FROM SiteBookings) >= divesite_capacity_day THEN
+        IF (site_count_open + site_count_cave + site_count_deeper >= divesite_capacity_day THEN
             RETURN NULL;
         END IF;
     END IF;
     
     IF new_type = 'cave' THEN
-        IF (SELECT count
-            FROM SiteBookings
-            WHERE dive_type = new_type) >= divesite_capacity_cave THEN
+        IF site_count_cave >= divesite_capacity_cave THEN
             RETURN NULL;
         END IF;
     ELSIF new_type = 'deeper than 30' THEN
-        IF (SELECT count
-            FROM SiteBookings
-            WHERE dive_type = new_type) >= divesite_capacity_deeper THEN
+        IF site_count_deeper >= divesite_capacity_deeper THEN
             RETURN NULL;
         END IF;
     END IF;
