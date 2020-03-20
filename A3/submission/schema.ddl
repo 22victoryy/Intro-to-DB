@@ -105,7 +105,7 @@ affiliation_id INT REFERENCES MonitorAffiliations,
 -- price per diver at time of booking
 price NUMERIC NOT NULL CHECK(price >= 0),
 -- date of the dive for the booking,
-date timestamp NOT NULL CHECK (date > current_timestamp),
+date timestamp NOT NULL,
 -- nitrogen level
 -- same lead same date time different booking
 UNIQUE (affiliation_id, date)
