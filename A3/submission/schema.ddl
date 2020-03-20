@@ -208,8 +208,8 @@ DECLARE
     sub_booking_count integer;
     site_count integer;
 BEGIN
-    SELECT dive_time INTO new_time, dive_type INTO new_type,
-           monitor_id INTO monitor_id, site_id INTO site_id
+    SELECT dive_time, dive_type, monitor_id, site_id
+	       INTO new_time, new_type, monitor_id, site_id
     FROM BookingInfo
     WHERE id = NEW.booking_id;
  
@@ -225,10 +225,9 @@ BEGIN
         RETURN NULL;
     END IF;
  
-    SELECT day_capacity INTO divesite_capacity_day,
-           night_capacity INTO divesite_capacity_night,
-           cave_capacity INTO divesite_capacity_cave,
-           deeper30_capacity INTO divesite_capacity_deeper
+    SELECT day_capacity, night_capacity, cave_capacity, deeper30_capacity
+	       INTO divesite_capacity_day, divesite_capacity_night,
+	            divesite_capacity_cave, divesite_capacity_deeper
     FROM DiveSite 
     WHERE (DiveSite.id = site.id); 
  
@@ -272,7 +271,7 @@ DECLARE
     booking_date timestamp;
     certification certification;
 BEGIN
-    SELECT dob INTO dob, certification INTO certification
+    SELECT dob, certification INTO dob, certification
     FROM Diver
     WHERE id=New.diver_id;
  
