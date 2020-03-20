@@ -117,9 +117,10 @@ FROM Booking JOIN MonitorAffiliations
      ON Booking.affiliation_id = MonitorAffiliations.id;
 -- TODO: check if the monitor does the dive_type (i.e capacity > 0)
 CREATE OR REPLACE FUNCTION nitrogen_trigger() RETURNS trigger AS $nitrogen_check$
-BEGIN 
+DECLARE 
     new_time dive_time;
     num_dives integer;
+BEGIN
     SELECT dive_time INTO new_time
     FROM MonitorAffiliations
     WHERE id = NEW.affiliation_id;
@@ -136,7 +137,7 @@ BEGIN
     SELECT count(*) INTO num_dives
     FROM BookingInfo
     WHERE BookingInfo.monitor_id = NEW.monitor_id AND
-         ((BookingInfo.date - NEW.date < '24:00:00' OR
+         (BookingInfo.date - NEW.date < '24:00:00' OR
           NEW.date - BookingInfo.date < '24:00:00');
     IF num_dives = 2 THEN
         RETURN NULL;
@@ -146,9 +147,10 @@ END;
 $nitrogen_check$ LANGUAGE plpgsql;
  
 CREATE OR REPLACE FUNCTION lead_trigger() RETURNS trigger AS $lead$
-BEGIN
+DECLARE
     -- Lead diver cannot have multiple bookings on the same date and time
     count integer;
+BEGIN
     SELECT count(*) INTO count
     FROM BookingInfo
     WHERE lead=NEW.lead AND
@@ -192,23 +194,23 @@ PRIMARY KEY (booking_id, diver_id)
 );
  
 CREATE OR REPLACE FUNCTION capacity_trigger() RETURNS trigger AS $capacity_trigger$
-BEGIN
+DECLARE
     new_time dive_time;
     new_type dive_type;
     monitor_id integer;
-    monitor_capacity;
-    divesite_capacity_day;
-    divesite_capacity_night;
-    divesite_capacity_cave;
-    divesite_capacity_deeper;
+    monitor_capacity integer;
+    divesite_capacity_day integer;
+    divesite_capacity_night integer;
+    divesite_capacity_cave integer;
+    divesite_capacity_deeper integer;
     site_id integer;
     sub_booking_count integer;
     site_count integer;
- 
+BEGIN
     SELECT dive_time INTO new_time, dive_type INTO new_type,
            monitor_id INTO monitor_id, site_id INTO site_id
     FROM BookingInfo
-    WHERE id = NEW.id;;
+    WHERE id = NEW.booking_id;
  
     SELECT count(*) INTO sub_booking_count
     FROM SubBooking
@@ -216,7 +218,7 @@ BEGIN
  
     SELECT capacity INTO monitor_capacity
     FROM MonitorCapacity
-    WHERE (monitor_id = monitor_id) AND (dive_type=dive_type) 
+    WHERE (monitor_id = monitor_id) AND (dive_type=dive_type);
  
     IF sub_booking_capacity >= monitor_capacity THEN
         RETURN NULL;
@@ -264,10 +266,11 @@ END;
 $capacity_trigger$ LANGUAGE plpgsql;
  
 CREATE OR REPLACE FUNCTION diver_elig_trigger() RETURNS trigger AS $diver_elig_trigger$
-BEGIN
+DECLARE
     dob timestamp;
     booking_date timestamp;
     certification certification;
+BEGIN
     SELECT dob INTO dob, certification INTO certification
     FROM Diver
     WHERE id=New.diver_id;
@@ -278,11 +281,11 @@ BEGIN
  
     IF (booking_date - dob < INTERVAL '16 years')
        OR certification IS NULL THEN 
-RETURN NULL;
+        RETURN NULL;
     END IF;
     RETURN NEW;
 END;
-$diver_elig_trigger()$ LANGUAGE plpgsql;
+$diver_elig_trigger$ LANGUAGE plpgsql;
  
 CREATE TRIGGER capacity_trigger
 BEFORE UPDATE OR INSERT
