@@ -110,21 +110,22 @@ date timestamp NOT NULL,
 -- same lead same date time different booking
 UNIQUE (affiliation_id, date)
 );
- 
+
 CREATE VIEW BookingInfo AS
 SELECT Booking.id AS id, lead_id, date, monitor_id, dive_time, dive_type, site_id
 FROM Booking JOIN MonitorAffiliations
      ON Booking.affiliation_id = MonitorAffiliations.id;
 -- TODO: check if the monitor does the dive_type (i.e capacity > 0)
 CREATE OR REPLACE FUNCTION nitrogen_trigger() RETURNS trigger AS $nitrogen_check$
-DECLARE 
+
+DECLARE
     new_time dive_time;
     num_dives integer;
 BEGIN
     SELECT dive_time INTO new_time
     FROM MonitorAffiliations
     WHERE id = NEW.affiliation_id;
- 
+
     IF new_time = 'morning' THEN
         NEW.date := date_trunc('date', NEW.date) + '9:30:00';
     ELSIF new_time = 'afternoon' THEN
@@ -145,7 +146,7 @@ BEGIN
     RETURN NEW;
 END;
 $nitrogen_check$ LANGUAGE plpgsql;
- 
+
 CREATE OR REPLACE FUNCTION lead_trigger() RETURNS trigger AS $lead$
 DECLARE
     -- Lead diver cannot have multiple bookings on the same date and time
@@ -162,19 +163,19 @@ BEGIN
     RETURN NEW;
 END;
 $lead$ LANGUAGE plpgsql;
- 
+
 CREATE TRIGGER monitor_nitrogen
 BEFORE UPDATE OR INSERT
 ON Booking
 FOR EACH ROW
 EXECUTE PROCEDURE nitrogen_trigger();
- 
+
 CREATE TRIGGER lead_same_date_time
 BEFORE UPDATE OR INSERT
 ON Booking
 FOR EACH ROW
 EXECUTE PROCEDURE lead_trigger();
- 
+
 -- Divers included in a booking and extras purchased
 CREATE TABLE SubBooking (
 -- the booking the diver is included in
