@@ -140,7 +140,7 @@ BEGIN
     SELECT count(*) INTO num_dives
     FROM BookingInfo, con
     WHERE BookingInfo.monitor_id = mid AND
-         (BookingInfo.date - vdate < '24:00:00' OR
+         (BookingInfo.date - vdate < '24:00:00' AND
           vdate - BookingInfo.date < '24:00:00');
     IF num_dives = 2 THEN
         RETURN NULL;
@@ -216,9 +216,9 @@ DECLARE
     new_site_id integer;
     sub_booking_count integer;
     site_count integer;
-    site_count_cave;
-    site_count_deeper;
-    site_count_open;
+    site_count_cave integer;
+    site_count_deeper integer;
+    site_count_open integer;
 BEGIN
     WITH con (bid) AS (VALUES (NEW.booking_id))
     SELECT dive_time, dive_type, BookingInfo.monitor_id, BookingInfo.site_id
@@ -264,11 +264,11 @@ BEGIN
         AND dive_type = 'deeper than 30';
 
     IF new_time = 'night' THEN
-        IF (site_count_open + site_count_cave + site_count_deeper >= divesite_capacity_night THEN
+        IF (site_count_open + site_count_cave + site_count_deeper) >= divesite_capacity_night THEN
             RETURN NULL;
         END IF;
     ELSE
-        IF (site_count_open + site_count_cave + site_count_deeper >= divesite_capacity_day THEN
+        IF (site_count_open + site_count_cave + site_count_deeper) >= divesite_capacity_day THEN
             RETURN NULL;
         END IF;
     END IF;
@@ -293,7 +293,7 @@ DECLARE
     certification certification;
 BEGIN
     WITH con (did) AS (VALUES (NEW.diver_id))
-    SELECT dob, certification INTO dob, certification
+    SELECT Diver.dob, Diver.certification INTO dob, certification
     FROM Diver, con
     WHERE Diver.id=did;
  
@@ -339,3 +339,4 @@ rating INT CHECK (0 <= rating and rating <= 5) NOT NULL,
 PRIMARY KEY (booking_id, diver_id),
 FOREIGN KEY (booking_id, diver_id) REFERENCES SubBooking
 );
+
