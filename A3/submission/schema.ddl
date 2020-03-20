@@ -121,9 +121,10 @@ CREATE OR REPLACE FUNCTION nitrogen_trigger() RETURNS trigger AS $nitrogen_check
 DECLARE
     new_time dive_time;
     num_dives integer;
+    mid integer;
 BEGIN
     WITH con (vid) AS (VALUES (NEW.affiliation_id))
-    SELECT dive_time INTO new_time
+    SELECT dive_time, monitor_id INTO new_time, mid
     FROM MonitorAffiliations, con
     WHERE MonitorAffiliations.id = vid;
 
@@ -135,8 +136,7 @@ BEGIN
         NEW.date := date_trunc('day', NEW.date) + '20:30:00';
     END IF;
     --- Check if the diver has dived more than three times
-    WITH con (mid, vdate) AS (VALUES (NEW.monitor_id, NEW.date))
-    CREATE OR REPLACE VIEW MonitorBookings AS
+    WITH con (vdate) AS (VALUES (NEW.date))
     SELECT count(*) INTO num_dives
     FROM BookingInfo, con
     WHERE BookingInfo.monitor_id = mid AND

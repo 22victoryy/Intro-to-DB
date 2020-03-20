@@ -1,6 +1,6 @@
 INSERT INTO DiveSite VALUES
 (1, 'Bloody Bay Marine Park', 10,  5, 5, 5, 5,  true),
-(2,     'Widow Maker\'s Cave', 20, 10, 5, 5, 5,  true),
+(2,     'Widow Maker''s Cave', 20, 10, 5, 5, 5,  true),
 (3,            'Crystal Bay', 15, 10, 5, 5, 5,  true),
 (4,            'Batu Bolong', 15, 10, 3, 3, 3,  true),
 (5,            'The Bay Bay', 20,  5, 3, 3, 3, false);
