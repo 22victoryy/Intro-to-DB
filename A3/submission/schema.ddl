@@ -123,23 +123,23 @@ DECLARE
     num_dives integer;
 BEGIN
     SELECT dive_time INTO new_time
-    FROM MonitorAffiliations
-    WHERE id = NEW.affiliation_id;
+    FROM MonitorAffiliations, (NEW.*) Newt
+    WHERE MonitorAffiliations.id = Newt.affiliation_id;
 
     IF new_time = 'morning' THEN
-        NEW.date := date_trunc('date', NEW.date) + '9:30:00';
+        NEW.date := date_trunc('day', NEW.date) + '9:30:00';
     ELSIF new_time = 'afternoon' THEN
-        NEW.date := date_trunc('date', NEW.date) + '12:30:00';
+        NEW.date := date_trunc('day', NEW.date) + '12:30:00';
     ELSIF new_time = 'night' THEN
-        NEW.date := date_trunc('date', NEW.date) + '20:30:00';
+        NEW.date := date_trunc('day', NEW.date) + '20:30:00';
     END IF;
     --- Check if the diver has dived more than three times
     CREATE OR REPLACE VIEW MonitorBookings AS
     SELECT count(*) INTO num_dives
-    FROM BookingInfo
+    FROM BookingInfo, (NEW.*) Newt
     WHERE BookingInfo.monitor_id = NEW.monitor_id AND
-         (BookingInfo.date - NEW.date < '24:00:00' OR
-          NEW.date - BookingInfo.date < '24:00:00');
+         (BookingInfo.date - Newt.date < '24:00:00' OR
+          Newt.date - BookingInfo.date < '24:00:00');
     IF num_dives = 2 THEN
         RETURN NULL;
     END IF;
@@ -151,12 +151,17 @@ CREATE OR REPLACE FUNCTION lead_trigger() RETURNS trigger AS $lead$
 DECLARE
     -- Lead diver cannot have multiple bookings on the same date and time
     count integer;
+    new_time dive_time;
 BEGIN
+    SELECT dive_time INTO new_time
+    FROM MonitorAffiliations, (SELECT NEW.*) Newt
+    WHERE MonitorAffiliations.id = Newt.affiliation_id;
+
     SELECT count(*) INTO count
-    FROM BookingInfo
-    WHERE lead=NEW.lead AND
-          date_trunc('day', date)=date_trunc('day', NEW.date) AND
-          dive_time=NEW.dive_time;
+    FROM BookingInfo, (SELECT NEW.*) Newt
+    WHERE BookingInfo.lead_id=Newt.lead_id AND
+          date_trunc('day', BookingInfo.date)=date_trunc('day', Newt.date) AND
+          BookingInfo.dive_time=new_time;
     IF count > 0 THEN
         RETURN NULL;
     END IF;
@@ -198,30 +203,30 @@ CREATE OR REPLACE FUNCTION capacity_trigger() RETURNS trigger AS $capacity_trigg
 DECLARE
     new_time dive_time;
     new_type dive_type;
-    monitor_id integer;
+    new_monitor_id integer;
     monitor_capacity integer;
     divesite_capacity_day integer;
     divesite_capacity_night integer;
     divesite_capacity_cave integer;
     divesite_capacity_deeper integer;
-    site_id integer;
+    new_site_id integer;
     sub_booking_count integer;
     site_count integer;
 BEGIN
-    SELECT dive_time, dive_type, monitor_id, site_id
-	       INTO new_time, new_type, monitor_id, site_id
-    FROM BookingInfo
-    WHERE id = NEW.booking_id;
+    SELECT dive_time, dive_type, BookingInfo.monitor_id, BookingInfo.site_id
+	       INTO new_time, new_type, new_monitor_id, new_site_id
+    FROM BookingInfo, (SELECT NEW.*) Newt
+    WHERE BookingInfo.id = Newt.booking_id;
  
     SELECT count(*) INTO sub_booking_count
-    FROM SubBooking
-    WHERE booking_id = NEW.booking_id;
+    FROM SubBooking, (SELECT NEW.*) Newt
+    WHERE SubBooking.booking_id = Newt.booking_id;
  
     SELECT capacity INTO monitor_capacity
     FROM MonitorCapacity
-    WHERE (monitor_id = monitor_id) AND (dive_type=dive_type);
+    WHERE MonitorCapacity.monitor_id = new_monitor_id AND MonitorCapacity.dive_type=new_type;
  
-    IF sub_booking_capacity >= monitor_capacity THEN
+    IF sub_booking_count >= monitor_capacity THEN
         RETURN NULL;
     END IF;
  
@@ -229,16 +234,16 @@ BEGIN
 	       INTO divesite_capacity_day, divesite_capacity_night,
 	            divesite_capacity_cave, divesite_capacity_deeper
     FROM DiveSite 
-    WHERE (DiveSite.id = site.id); 
+    WHERE (DiveSite.id = new_site_id); 
  
     CREATE OR REPLACE VIEW SiteBookings AS
     SELECT dive_type, count(*) AS count
     FROM SubBooking JOIN BookingInfo ON
          SubBooking.booking_id = BookingInfo.id
-    WHERE site_id = site_id AND dive_time = dive_time
+    WHERE BookingInfo.site_id = new_site_id AND dive_time = new_time
     GROUP BY dive_type;
  
-    IF dive_time = 'night' THEN
+    IF new_time = 'night' THEN
         IF (SELECT sum(count) FROM SiteBookings) >= divesite_capacity_night THEN
             RETURN NULL;
         END IF;
@@ -248,16 +253,16 @@ BEGIN
         END IF;
     END IF;
     
-    IF dive_type = 'cave' THEN
+    IF new_type = 'cave' THEN
         IF (SELECT count
             FROM SiteBookings
-            WHERE dive_type = dive_type) >= divesite_capacity_cave THEN
+            WHERE dive_type = new_type) >= divesite_capacity_cave THEN
             RETURN NULL;
         END IF;
-    ELSIF dive_type = 'deeper than 30' THEN
+    ELSIF new_type = 'deeper than 30' THEN
         IF (SELECT count
             FROM SiteBookings
-            WHERE dive_type = dive_type) >= divesite_capacity_deeper THEN
+            WHERE dive_type = new_type) >= divesite_capacity_deeper THEN
             RETURN NULL;
         END IF;
     END IF;
@@ -272,12 +277,12 @@ DECLARE
     certification certification;
 BEGIN
     SELECT dob, certification INTO dob, certification
-    FROM Diver
-    WHERE id=New.diver_id;
+    FROM Diver, (SELECT NEW.*) Newt
+    WHERE Diver.id=Newt.diver_id;
  
-    SELECT date_trunc('day', date) INTO booking_date
-    FROM BookingInfo
-    WHERE id=NEW.booking_id;
+    SELECT date_trunc('day', BookingInfo.date) INTO booking_date
+    FROM BookingInfo, (SELECT NEW.*) Newt
+    WHERE BookingInfo.id=Newt.booking_id;
  
     IF (booking_date - dob < INTERVAL '16 years')
        OR certification IS NULL THEN 
