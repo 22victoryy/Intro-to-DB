@@ -15,11 +15,11 @@ CREATE VIEW AvgMonitorRating AS
 SELECT MonitorAffiliations.monitor_id AS monitor_id,
        avg(MonitorRating.rating) AS avg_rating 
 FROM MonitorRating, Booking, MonitorAffiliations
-WHERE MonitorRating.booking_id = Booking.id AND
+WHERE MonitorRating.id = Booking.id AND
       Booking.affiliation_id = MonitorAffiliations.id
 GROUP BY MonitorAffiliations.monitor_id;
 
-SELECT 
+SELECT monitor_id
 FROM AvgMonitorRating
 WHERE avg_rating > ALL (SELECT avg_rating
                         FROM AvgSiteRating, MonitorAffiliations MA
