@@ -71,8 +71,11 @@ id INT PRIMARY KEY,
 -- The first name of the monitor
 firstname VARCHAR(50) NOT NULL,
 -- The surname of the monitor
-surname VARCHAR(50) NOT NULL
+surname VARCHAR(50) NOT NULL,
+-- The email of the monitor.
+email varchar(30) NOT NULL,
 );
+
 -- dive type
 CREATE TYPE dive_type AS ENUM ('open water', 'cave', 'deeper than 30');
 -- dive time

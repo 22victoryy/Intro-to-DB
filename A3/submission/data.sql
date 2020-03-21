@@ -12,9 +12,9 @@ INSERT INTO DiveSiteExtrasFees VALUES
 (4,   10, NULL,  NULL,   30);
  
 INSERT INTO Monitor VALUES
-(1, 'Maria', 'Mahboob'),
-(2, 'John', 'Heap'),
-(3, 'Ben', 'Dover');
+(1, 'Maria', 'Mahboob', 'Maria@drown.com'),
+(2, 'John', 'Heapsort', 'John@drowned.com'),
+(3, 'Ben',     'Dover', 'BenD@float.com');
  
 INSERT INTO MonitorCapacity VALUES
 (1, 'open water',     10),
