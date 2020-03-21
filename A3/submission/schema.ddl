@@ -73,7 +73,7 @@ firstname VARCHAR(50) NOT NULL,
 -- The surname of the monitor
 surname VARCHAR(50) NOT NULL,
 -- The email of the monitor.
-email varchar(30) NOT NULL,
+email varchar(30) NOT NULL
 );
 
 -- dive type
