@@ -75,6 +75,7 @@ INSERT INTO SubBooking VALUES
 (5, 4, 0, 0, 0, 0),
 (5, 6, 0, 0, 0, 0),
 (5, 7, 0, 0, 0, 0),
+(6, 2, 0, 0, 0, 0),
 (7, 5, 0, 0, 0, 0);
 
 INSERT INTO MonitorRating VALUES
