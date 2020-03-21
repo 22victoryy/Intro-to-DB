@@ -3,6 +3,8 @@ SET SEARCH_PATH TO wetworldschema, public;
 DROP VIEW IF EXISTS AvgSiteRating CASCADE;
 DROP VIEW IF EXISTS AvgMonitorRating CASCADE;
 DROP VIEW IF EXISTS BetterMonitors CASCADE;
+DROP VIEW IF EXISTS BetterMonitorsAvgFee CASCADE;
+
 
 CREATE VIEW AvgSiteRating AS
 SELECT MonitorAffiliations.site_id AS site_id,
