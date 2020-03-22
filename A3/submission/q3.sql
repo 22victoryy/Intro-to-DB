@@ -51,7 +51,8 @@ EXCEPT
  FROM GreaterThanHalfSite);
 
 -- Result contains two rows, one for the greater than half with its average fee
--- per dive and one for less than or equal to half with its average fee 
+-- per dive and one for less than or equal to half with its average fee.
+-- Sites that never had bookings are not included in either averages 
 (SELECT 'Greater than half' AS avg_full, avg(total_fees) AS avg_fees_per_dive
  FROM GreaterThanHalfSite, TotalFeesAndDiversPerBooking
  WHERE GreaterThanHalfSite.site_id = TotalFeesAndDiversPerBooking.site_id)
