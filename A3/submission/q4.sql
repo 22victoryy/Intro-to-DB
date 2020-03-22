@@ -3,13 +3,14 @@ SET SEARCH_PATH TO wetworldschema, public;
 DROP VIEW IF EXISTS ALLFEES CASCADE;
 
 CREATE VIEW ALLFEES AS
-SELECT Booking.price, site_id
+SELECT sum(Booking.price), site_id
 FROM SubBooking, MonitorAffiliations, Booking
-WHERE Booking.affiliation_id = MonitorAffiliations.monitor_id AND SubBooking.booking_id = Booking.id;
+WHERE Booking.affiliation_id = MonitorAffiliations.id AND SubBooking.booking_id = Booking.id
+GROUP BY booking_id,site_id;
 
-SELECT avg(price), min(price), max(price)
+SELECT site_id, avg(sum), min(sum), max(sum)
 FROM ALLFEES
-GROUP BY ALLFEES.site_id
+GROUP BY ALLFEES.site_id;
 
 
 
