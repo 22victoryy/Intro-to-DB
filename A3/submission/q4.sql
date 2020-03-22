@@ -4,13 +4,34 @@ DROP VIEW IF EXISTS ALLFEES CASCADE;
 
 CREATE VIEW ALLFEES AS
 SELECT price, site_id
-FROM subbooking INNER JOIN MonitorAffiliations ON (MonitorAffiliations.monitor_id = subbooking.diver_id);
+FROM SubBooking, MonitorAffiliations, Booking
+WHERE Booking.affiliation_id = MonitorAffiliations.monitor_id AND SubBooking.booking_id = Booking.id
+-- SELECT price, site_id
+-- FROM subbooking INNER JOIN MonitorAffiliations ON (MonitorAffiliations.monitor_id = subbooking.diver_id);
+
+
 
 SELECT avg(price), min(price), max(price)
 FROM ALLFEES
 GROUP BY site_id
 
 
+
+-- -- A dive booking
+-- CREATE TABLE Booking (
+-- id INT PRIMARY KEY,
+-- -- lead diver for the booking
+-- lead_id INT REFERENCES Diver,
+-- -- monitor affiliation for the booking
+-- affiliation_id INT REFERENCES MonitorAffiliations,
+-- -- price per diver at time of booking
+-- price NUMERIC NOT NULL CHECK(price >= 0),
+-- -- date and start time of the dive for the booking
+-- date timestamp NOT NULL,
+-- -- same lead same date time different booking
+-- UNIQUE (affiliation_id, date),
+-- UNIQUE (lead_id, date)
+-- );
 
 
 
