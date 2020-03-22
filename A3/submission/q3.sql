@@ -1,3 +1,6 @@
+-- For this query sites that did not have any bookings are not included in
+-- either of greater than half or less than or equal to half.
+
 SET SEARCH_PATH TO wetworldschema, public;
 
 -- get fee for every booking

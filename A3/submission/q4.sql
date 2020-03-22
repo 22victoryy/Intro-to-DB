@@ -1,3 +1,7 @@
+-- For this query, we are calculating the fee per dive without adding on the
+-- fees of extras. The query will also not include sites that were never booked
+-- since it is not possible to know how much a dive costs without a booking.
+
 SET SEARCH_PATH TO wetworldschema, public;
 
 DROP VIEW IF EXISTS ALLFEES CASCADE;

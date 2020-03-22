@@ -104,7 +104,8 @@ dive_type dive_type NOT NULL,
 site_id INT REFERENCES DiveSite,
 -- the dive time of the diving
 dive_time dive_time NOT NULL,
--- price for monitor site type combination
+-- price for monitor site type combination, the fee here includes monitor and
+-- site fees
 price NUMERIC NOT NULL CHECK (price > 0),
 UNIQUE (monitor_id, site_id, dive_time, dive_type)
 );
@@ -116,7 +117,8 @@ id INT PRIMARY KEY,
 lead_id INT REFERENCES Diver,
 -- monitor affiliation for the booking
 affiliation_id INT REFERENCES MonitorAffiliations,
--- price per diver at time of booking
+-- price per diver at time of booking, can be different than current price in
+-- MonitorAffiliations table
 price NUMERIC NOT NULL CHECK(price >= 0),
 -- date and start time of the dive for the booking
 date timestamp NOT NULL,
@@ -132,6 +134,8 @@ booking_id INT REFERENCES Booking,
 -- the diver associated with the booking
 diver_id INT REFERENCES Diver,
 -- extras
+-- prices can be different than those in the DiveSiteExtrasFees table depending
+-- on time of purchase
 -- fee paid for mask, zero if not purchased
 mask NUMERIC NOT NULL CHECK (mask >= 0) DEFAULT 0,
 -- fee paid for regulator, zero if not purchased
