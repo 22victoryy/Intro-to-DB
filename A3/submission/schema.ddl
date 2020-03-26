@@ -133,9 +133,9 @@ UNIQUE (lead_id, date)
 CREATE TABLE CreditCardInfo(
  booking_id INT PRIMARY KEY REFERENCES Booking,
  -- curently only accepting visa credit cards
- card_number CAHR(14) NOT NULL CHECK (card_number LIKE '[0-9]{14}'),
+ card_number CHAR(14) NOT NULL CHECK (card_number SIMILAR TO '[0-9]{14}'),
  expiration timestamp NOT NULL,
- security_code CHAR(3) NOT NULL CHECK (security_code LIKE '[0-9]{3}')
+ security_code CHAR(3) NOT NULL CHECK (security_code SIMILAR TO '[0-9]{3}')
 );
 
 -- Divers included in a booking and extras purchased
