@@ -9,17 +9,6 @@
 -- Could not check diver age and certification as they would require a trigger
 -- which accesses the Diver relation from the SubBooking relation.
 
-CREATE TABLE CreditCardInfo(
- id INT PRIMARY KEY,
- diver_id INT REFERENCES Diver,
- card_number VARCHAR(19) NOT NULL CHECK (char_length(card_number) >= 13),
- expiration timestamp NOT NULL,
- security_code VARCHAR(4) NOT NULL
-);
-
-
-
-
 DROP SCHEMA IF EXISTS wetworldschema CASCADE;
 CREATE SCHEMA wetworldschema;
 SET search_path TO wetworldschema;
@@ -136,6 +125,17 @@ date timestamp NOT NULL,
 -- same lead same date time different booking
 UNIQUE (affiliation_id, date),
 UNIQUE (lead_id, date)
+);
+
+-- Table for storing credit card information for a lead diver per booking
+-- This table is seperate because it should be stored in a lot more secure
+-- place than the Booking table
+CREATE TABLE CreditCardInfo(
+ booking_id INT PRIMARY KEY REFERENCES Booking,
+ -- curently only accepting visa credit cards
+ card_number CAHR(14) NOT NULL CHECK (card_number LIKE '[0-9]{14}'),
+ expiration timestamp NOT NULL,
+ security_code CHAR(3) NOT NULL CHECK (security_code LIKE '[0-9]{3}')
 );
 
 -- Divers included in a booking and extras purchased
