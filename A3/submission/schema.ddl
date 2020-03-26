@@ -9,6 +9,17 @@
 -- Could not check diver age and certification as they would require a trigger
 -- which accesses the Diver relation from the SubBooking relation.
 
+CREATE TABLE CreditCardInfo(
+ id INT PRIMARY KEY,
+ diver_id INT REFERENCES Diver,
+ card_number VARCHAR(19) NOT NULL CHECK (char_length(card_number) >= 13),
+ expiration timestamp NOT NULL,
+ security_code VARCHAR(4) NOT NULL
+);
+
+
+
+
 DROP SCHEMA IF EXISTS wetworldschema CASCADE;
 CREATE SCHEMA wetworldschema;
 SET search_path TO wetworldschema;
