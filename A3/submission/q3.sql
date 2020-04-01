@@ -26,24 +26,21 @@ WHERE Booking.id = SubBooking.booking_id AND
 GROUP BY Booking.id, MonitorAffiliations.site_id, date, dive_time;
 
 
--- A view containing how full a site is on a given date time it was booked.
+-- A view containing how full a site is on a given date it was booked.
 -- If the site was never booked then its not in this view
-CREATE VIEW DiveSiteFullPercentPerDateTime AS
-SELECT DiveSite.id AS site_id, date, dive_time,
-CASE
-    WHEN dive_time = 'night' THEN sum(total_divers)/night_capacity
-    ELSE sum(total_divers)/day_capacity
-END AS full_percent
+CREATE VIEW DiveSiteFullPercentPerDate AS
+SELECT DiveSite.id AS site_id,
+       sum(total_divers)/(2*day_capacity + night_capacity) AS full_fraction
 FROM TotalFeesAndDiversPerBooking JOIN DiveSite
      ON TotalFeesAndDiversPerBooking.site_id = DiveSite.id
-GROUP BY DiveSite.id, date, dive_time;
+GROUP BY DiveSite.id, date_trunc('day', date);
 
 -- Sites that are more than half full on average
 CREATE VIEW GreaterThanHalfSite AS
 SELECT site_id
-FROM DiveSiteFullPercentPerDateTime
+FROM DiveSiteFullPercentPerDate
 GROUP BY site_id
-HAVING avg(full_percent) > 0.5;
+HAVING avg(full_fraction) > 0.5;
 
 -- Sites that are less than or equal to half full on average
 CREATE VIEW LessOrEqualToHalfSite AS
@@ -55,7 +52,8 @@ EXCEPT
 
 -- Result contains two rows, one for the greater than half with its average fee
 -- per dive and one for less than or equal to half with its average fee.
--- Sites that never had bookings are not included in either averages 
+-- Sites that never had bookings are not included in either averages
+-- If no sites are in one of the categories then a value of NULL is given 
 (SELECT 'Greater than half' AS avg_full, avg(total_fees) AS avg_fees_per_dive
  FROM GreaterThanHalfSite, TotalFeesAndDiversPerBooking
  WHERE GreaterThanHalfSite.site_id = TotalFeesAndDiversPerBooking.site_id)
