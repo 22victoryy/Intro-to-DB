@@ -1,6 +1,6 @@
 # intro-to-db
-Database coursework of relational algebra and designing schemas, queries with PostgreSQL.
+Database coursework of relational algebra and designing schemas, queries with PostgreSQL. Team collab with Ahmad Saidi
 
-# Credits
-Danny Heap / Mark Kazakevich, for instruction of CSC343 Winter 2020 at University of Toronto <br>
-Ahmad Saidi, for team collaboration on A1, A2, and A3
+# Reference
+University of Toronto <br>
+Danny Heap / Mark KazakevichWinter 2020 <br>
